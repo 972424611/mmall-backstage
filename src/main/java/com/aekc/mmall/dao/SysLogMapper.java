@@ -29,5 +29,5 @@ public interface SysLogMapper {
 
     int countBySearchDto(SearchLogDto dto);
 
-    List<SysLogWithBLOBs> getPageListBySearchDto(@Param("dto") SearchLogDto dto, @Param("page") PageQuery page);
+    List<SysLogWithBLOBs> selectPageListBySearchDto(@Param("dto") SearchLogDto dto, @Param("page") PageQuery page);
 }

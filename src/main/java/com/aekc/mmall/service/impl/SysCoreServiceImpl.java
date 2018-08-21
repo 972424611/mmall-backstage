@@ -12,6 +12,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,8 +38,7 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public List<SysAcl> getRoleAclList(int roleId) {
-        List<Integer> roleIdList = Lists.newArrayList(roleId);
-        List<Integer> aclIdList = sysRoleAclMapper.selectAclIdListByRoleIdList(roleIdList);
+        List<Integer> aclIdList = sysRoleAclMapper.selectAclIdListByRoleId(roleId);
         if(CollectionUtils.isEmpty(aclIdList)) {
             return Lists.newArrayList();
         }
@@ -53,11 +54,15 @@ public class SysCoreServiceImpl implements SysCoreService {
         if(CollectionUtils.isEmpty(userRoleIdList)) {
             return Lists.newArrayList();
         }
-        List<Integer> userAclIdList = sysRoleAclMapper.selectAclIdListByRoleIdList(userRoleIdList);
+        List<Integer> userAclIdList = new ArrayList<>();
+        for(Integer roleId : userRoleIdList) {
+            userAclIdList.addAll(sysRoleAclMapper.selectAclIdListByRoleId(roleId));
+        }
         if(CollectionUtils.isEmpty(userAclIdList)) {
             return Lists.newArrayList();
         }
-        return sysAclMapper.selectByIdList(userAclIdList);
+        Set<Integer> userAclIdSet = new HashSet<>(userAclIdList);
+        return sysAclMapper.selectByIdList(new ArrayList<>(userAclIdSet));
     }
 
     private boolean isSuperAdmin() {

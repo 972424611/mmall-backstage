@@ -164,5 +164,36 @@
     <include refid="queryConditions"/>
   </select>
 
+  <sql id="queryConditions">
+    <where>
+      <if test="dto.type != null">
+        AND type = #{dto.type}
+      </if>
+      <if test="dto.beforeSeg != null and dto.beforeSeg != ''">
+        AND old_value LIKE #{dto.beforeSeg}
+      </if>
+      <if test="dto.afterSeg != null and dto.afterSeg != ''">
+        AND new_value LIKE #{dto.afterSeg}
+      </if>
+      <if test="dto.operator != null and dto.operator != ''">
+        AND operator LIKE #{dto.operator}
+      </if>
+      <if test="dto.fromTime != null">
+        AND operate_time &gt;= #{dto.fromTime}
+      </if>
+      <if test="dto.toTime != null">
+        AND operate_time &lt;= #{dto.toTime}
+      </if>
+    </where>
+  </sql>
+
+  <select id="selectPageListBySearchDto" parameterType="map" resultMap="ResultMapWithBLOBs">
+    SELECT <include refid="Base_Column_List"/>, <include refid="Blob_Column_List"/>
+    FROM sys_log
+    <include refid="queryConditions"/>
+    ORDER BY operate_time DESC
+    LIMIT #{page.offset}, #{page.pageSize}
+  </select>
+
 
 </mapper>

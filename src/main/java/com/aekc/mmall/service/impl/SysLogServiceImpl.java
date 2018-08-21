@@ -67,12 +67,14 @@ public class SysLogServiceImpl implements SysLogService {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void recover(int id) {
         SysLogWithBLOBs sysLogWithBLOBs = sysLogMapper.selectByPrimaryKey(id);
         if(sysLogWithBLOBs == null) {
             throw new LogException("待还原的记录不存在");
         }
         LogType logType = LogType.getLogType(sysLogWithBLOBs.getType());
+        assert logType != null;
         switch(logType) {
             case TYPE_DEPT:
                 SysDept beforeDept = sysDeptMapper.selectByPrimaryKey(sysLogWithBLOBs.getTargetId());
@@ -109,13 +111,15 @@ public class SysLogServiceImpl implements SysLogService {
                 if(aclRole == null) {
                     throw new LogException("角色已经不存在了");
                 }
-                sysRoleAclService.changeRoleAcls(sysLogWithBLOBs.getTargetId(), JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), List.class));
+                sysRoleAclService.changeRoleAcls(sysLogWithBLOBs.getTargetId(),
+                        JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), List.class));
             case TYPE_ROLE_USER:
                 SysRole userRole = sysRoleMapper.selectByPrimaryKey(sysLogWithBLOBs.getTargetId());
                 if(userRole == null) {
                     throw new LogException("角色已经不存在了");
                 }
-                sysRoleUserService.changeRoleUsers(sysLogWithBLOBs.getTargetId(), JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), List.class));
+                sysRoleUserService.changeRoleUsers(sysLogWithBLOBs.getTargetId(),
+                        JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), List.class));
             default:
                 break;
         }
@@ -135,27 +139,28 @@ public class SysLogServiceImpl implements SysLogService {
     }
 
     private void saveDeptLog(SysDept before, SysDept after) {
-        sysLogMapper.insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_DEPT.getType()));
+        sysLogMapper.
+                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_DEPT.getType()));
     }
 
     private void saveUserLog(SysUser before, SysUser after) {
-        sysLogMapper.insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_USER.getType()));
-
+        sysLogMapper.
+                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_USER.getType()));
     }
 
     private void saveAclModuleLog(SysAclModule before, SysAclModule after) {
-        sysLogMapper.insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL_MODULE.getType()));
-
+        sysLogMapper.
+                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL_MODULE.getType()));
     }
 
     private void saveAclLog(SysAcl before, SysAcl after) {
-        sysLogMapper.insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL.getType()));
-
+        sysLogMapper.
+                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL.getType()));
     }
 
     private void saveRoleLog(SysRole before, SysRole after) {
-        sysLogMapper.insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ROLE.getType()));
-
+        sysLogMapper.
+                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ROLE.getType()));
     }
 
     @Override
@@ -185,7 +190,7 @@ public class SysLogServiceImpl implements SysLogService {
         }
         int count = sysLogMapper.countBySearchDto(dto);
         if(count > 0) {
-            List<SysLogWithBLOBs> logList = sysLogMapper.getPageListBySearchDto(dto, page);
+            List<SysLogWithBLOBs> logList = sysLogMapper.selectPageListBySearchDto(dto, page);
             PageResult<SysLogWithBLOBs> pageResult = new PageResult<>();
             pageResult.setTotal(count);
             pageResult.setData(logList);

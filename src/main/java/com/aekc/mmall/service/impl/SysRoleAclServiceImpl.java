@@ -22,7 +22,7 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
 
     @Override
     public void changeRoleAcls(Integer roleId, List<Integer> aclIdList) {
-        List<Integer> originAclIdList = sysRoleAclMapper.selectAclIdListByRoleIdList(new ArrayList<>(roleId));
+        List<Integer> originAclIdList = sysRoleAclMapper.selectAclIdListByRoleId(roleId);;
         if(originAclIdList.size() == aclIdList.size()) {
             Set<Integer> originAclIdSet = Sets.newHashSet(originAclIdList);
             Set<Integer> aclIdSet = Sets.newHashSet(aclIdList);

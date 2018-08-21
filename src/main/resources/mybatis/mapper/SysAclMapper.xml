@@ -181,7 +181,7 @@
     SELECT <include refid="Base_Column_List"/>
     FROM sys_acl
     WHERE id IN
-    <foreach collection="idList" item="id" open="(" close=")" separator=",">
+    <foreach collection="aclIdList" item="id" open="(" close=")" separator=",">
       #{id}
     </foreach>
   </select>

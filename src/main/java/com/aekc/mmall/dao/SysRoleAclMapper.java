@@ -29,4 +29,6 @@ public interface SysRoleAclMapper {
     void batchInsert(@Param("roleAclList") List<SysRoleAcl> roleAclList);
 
     List<Integer> selectRoleIdListByAclId(int aclId);
+
+    List<Integer> selectAclIdListByRoleId(int roleId);
 }
