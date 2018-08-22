@@ -4,7 +4,6 @@ import com.aekc.mmall.model.SysRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mapper

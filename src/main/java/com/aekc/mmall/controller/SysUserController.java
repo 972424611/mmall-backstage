@@ -30,11 +30,6 @@ public class SysUserController {
     @Autowired
     private SysRoleService sysRoleService;
 
-    @RequestMapping(value = "/noAuth.page")
-    public ModelAndView noAuth() {
-        return new ModelAndView("noAuth");
-    }
-
     @ResponseBody
     @RequestMapping(value = "/save")
     public JsonData saveUser(UserParam param) {

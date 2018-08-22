@@ -4,10 +4,13 @@ import com.aekc.mmall.common.RequestHolder;
 import com.aekc.mmall.dao.SysLogMapper;
 import com.aekc.mmall.dao.SysRoleUserMapper;
 import com.aekc.mmall.dao.SysUserMapper;
+import com.aekc.mmall.enums.LogType;
+import com.aekc.mmall.model.SysLogWithBLOBs;
 import com.aekc.mmall.model.SysRoleUser;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.service.SysRoleUserService;
 import com.aekc.mmall.utils.IpUtil;
+import com.aekc.mmall.utils.JsonUtil;
 import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +52,7 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
             }
         }
         updateRoleUsers(roleId, userIdList);
+        saveRoleUserLog(roleId, originUserIdList, userIdList);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -70,4 +74,16 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
         sysRoleUserMapper.batchInsert(roleUserList);
     }
 
+    private void saveRoleUserLog(int roleId, List<Integer> before, List<Integer> after) {
+        SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
+        sysLog.setType(LogType.TYPE_ROLE_USER.getType());
+        sysLog.setTargetId(roleId);
+        sysLog.setOldValue(before == null ? "" : JsonUtil.objectToJson(before));
+        sysLog.setNewValue(after == null ? "" : JsonUtil.objectToJson(after));
+        sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
+        sysLog.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysLog.setOperateTime(new Date());
+        sysLog.setStatus(1);
+        sysLogMapper.insertSelective(sysLog);
+    }
 }

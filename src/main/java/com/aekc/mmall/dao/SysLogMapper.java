@@ -27,7 +27,7 @@ public interface SysLogMapper {
 
     //--------下面是自己添加的---------
 
-    int countBySearchDto(SearchLogDto dto);
+    int countBySearchDto(@Param("dto") SearchLogDto dto);
 
     List<SysLogWithBLOBs> selectPageListBySearchDto(@Param("dto") SearchLogDto dto, @Param("page") PageQuery page);
 }

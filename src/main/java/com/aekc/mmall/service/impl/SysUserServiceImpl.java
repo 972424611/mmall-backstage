@@ -8,6 +8,7 @@ import com.aekc.mmall.dao.SysUserMapper;
 import com.aekc.mmall.exception.UserException;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.param.UserParam;
+import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.service.SysUserService;
 import com.aekc.mmall.utils.IpUtil;
 import com.aekc.mmall.utils.SecurityUtil;
@@ -23,6 +24,9 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     private boolean checkEmailExist(String mail, Integer userId) {
         return sysUserMapper.countByMail(mail, userId) > 0;
@@ -51,6 +55,7 @@ public class SysUserServiceImpl implements SysUserService {
         //TODO; sendEmail提示用户注册成功，并告知账号密码
         //MailUtil.send(new Mail());
         sysUserMapper.insertSelective(sysUser);
+        sysLogService.saveUserLog(null, sysUser);
     }
 
     @Override
@@ -73,6 +78,7 @@ public class SysUserServiceImpl implements SysUserService {
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperateTime(new Date());
         sysUserMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveUserLog(before, after);
     }
 
     @Override

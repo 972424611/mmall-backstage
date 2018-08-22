@@ -69,7 +69,8 @@ public class SysRoleController {
 
     @ResponseBody
     @RequestMapping("/changeAcls")
-    public JsonData changeAcls(@RequestParam("roleId") int roleId, @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
+    public JsonData changeAcls(@RequestParam("roleId") int roleId,
+                               @RequestParam(value = "aclIds", required = false, defaultValue = "") String aclIds) {
         List<Integer> aclIdList = StringUtil.splitToListInt(aclIds);
         sysRoleAclService.changeRoleAcls(roleId, aclIdList);
         return JsonData.success();
@@ -77,7 +78,8 @@ public class SysRoleController {
 
     @ResponseBody
     @RequestMapping("/changeUsers")
-    public JsonData changeUsers(@RequestParam("roleId") int roleId, @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
+    public JsonData changeUsers(@RequestParam("roleId") int roleId,
+                                @RequestParam(value = "userIds", required = false, defaultValue = "") String userIds) {
         List<Integer> userIdList = StringUtil.splitToListInt(userIds);
         sysRoleUserService.changeRoleUsers(roleId, userIdList);
         return JsonData.success();
@@ -90,7 +92,7 @@ public class SysRoleController {
         List<SysUser> allUserList = sysUserService.getAll();
         List<SysUser> unselectedUserList = Lists.newArrayList();
 
-        Set<Integer> selectedUserIdSet = selectedUserList.stream().map(sysUser -> sysUser.getId()).collect(Collectors.toSet());
+        Set<Integer> selectedUserIdSet = selectedUserList.stream().map(SysUser::getId).collect(Collectors.toSet());
         for(SysUser sysUser : allUserList) {
             // 大数据不要用到List的contains方法, 用set效率会高很多
             if(sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {

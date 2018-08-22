@@ -3,12 +3,12 @@ package com.aekc.mmall.service.impl;
 import com.aekc.mmall.common.BeanValidator;
 import com.aekc.mmall.common.RequestHolder;
 import com.aekc.mmall.dao.SysDeptMapper;
-import com.aekc.mmall.dao.SysLogMapper;
 import com.aekc.mmall.dao.SysUserMapper;
 import com.aekc.mmall.exception.DeptException;
 import com.aekc.mmall.model.SysDept;
 import com.aekc.mmall.param.DeptParam;
 import com.aekc.mmall.service.SysDeptService;
+import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.utils.IpUtil;
 import com.aekc.mmall.utils.LevelUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,7 +30,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private SysLogMapper sysLogMapper;
+    private SysLogService sysLogService;
 
     private boolean checkExist(Integer parentId, String deptName, Integer deptId) {
         return sysDeptMapper.countByNameAndParentId(parentId, deptName, deptId) > 0;
@@ -74,6 +74,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         dept.setOperateTime(new Date());
         //insertSelective()只插入有值值
         sysDeptMapper.insertSelective(dept);
+        sysLogService.saveDeptLog(null, dept);
     }
 
     @Override
@@ -93,6 +94,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
+        sysLogService.saveDeptLog(before, after);
 
     }
 

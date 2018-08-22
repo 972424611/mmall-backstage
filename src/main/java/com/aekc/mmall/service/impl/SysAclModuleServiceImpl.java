@@ -8,6 +8,7 @@ import com.aekc.mmall.exception.AclModuleException;
 import com.aekc.mmall.model.SysAclModule;
 import com.aekc.mmall.param.AclModuleParam;
 import com.aekc.mmall.service.SysAclModuleService;
+import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.utils.IpUtil;
 import com.aekc.mmall.utils.LevelUtil;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +28,9 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
 
     @Autowired
     private SysAclMapper sysAclMapper;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     private boolean checkExist(Integer parentId, String aclModuleName, Integer aclModuleId) {
         return sysAclModuleMapper.countByNameAndParentId(parentId, aclModuleName, aclModuleId) > 0;
@@ -54,6 +58,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         aclModule.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         aclModule.setOperateTime(new Date());
         sysAclModuleMapper.insertSelective(aclModule);
+        sysLogService.saveAclModuleLog(null, aclModule);
     }
 
     @Override
@@ -74,6 +79,7 @@ public class SysAclModuleServiceImpl implements SysAclModuleService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         updateWithChild(before, after);
+        sysLogService.saveAclModuleLog(before, after);
     }
 
     @Transactional(rollbackFor = Exception.class)

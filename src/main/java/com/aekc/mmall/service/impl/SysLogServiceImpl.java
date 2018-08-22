@@ -50,7 +50,7 @@ public class SysLogServiceImpl implements SysLogService {
     @Autowired
     private SysRoleUserService sysRoleUserService;
 
-    private Object recover(Object before, SysLogWithBLOBs sysLogWithBLOBs) {
+    private SysBase recover(SysBase before, SysLogWithBLOBs sysLogWithBLOBs) {
         if(before == null) {
             throw new LogException("待还原的部门已经不存在了");
         }
@@ -58,7 +58,7 @@ public class SysLogServiceImpl implements SysLogService {
                 || StringUtils.isBlank(sysLogWithBLOBs.getOldValue())) {
             throw new LogException("新增和删除操作不做还原");
         }
-        SysDept after = JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), SysDept.class);
+        SysBase after = JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), before.getClass());
         assert after != null;
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
@@ -125,10 +125,10 @@ public class SysLogServiceImpl implements SysLogService {
         }
     }
 
-    private SysLogWithBLOBs save(Object before, Object after, int beforeId, int afterId, int type) {
+    private SysLogWithBLOBs save(SysBase before, SysBase after, int type) {
         SysLogWithBLOBs sysLog = new SysLogWithBLOBs();
         sysLog.setType(type);
-        sysLog.setTargetId(after == null ? beforeId : afterId);
+        sysLog.setTargetId(after == null ? before.getId() : after.getId());
         sysLog.setOldValue(before == null ? "" : JsonUtil.objectToJson(before));
         sysLog.setNewValue(after == null ? "" : JsonUtil.objectToJson(after));
         sysLog.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
@@ -138,29 +138,34 @@ public class SysLogServiceImpl implements SysLogService {
         return sysLog;
     }
 
-    private void saveDeptLog(SysDept before, SysDept after) {
+    @Override
+    public void saveDeptLog(SysDept before, SysDept after) {
         sysLogMapper.
-                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_DEPT.getType()));
+                insertSelective(save(before, after, LogType.TYPE_DEPT.getType()));
     }
 
-    private void saveUserLog(SysUser before, SysUser after) {
+    @Override
+    public void saveUserLog(SysUser before, SysUser after) {
         sysLogMapper.
-                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_USER.getType()));
+                insertSelective(save(before, after, LogType.TYPE_USER.getType()));
     }
 
-    private void saveAclModuleLog(SysAclModule before, SysAclModule after) {
+    @Override
+    public void saveAclModuleLog(SysAclModule before, SysAclModule after) {
         sysLogMapper.
-                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL_MODULE.getType()));
+                insertSelective(save(before, after, LogType.TYPE_ACL_MODULE.getType()));
     }
 
-    private void saveAclLog(SysAcl before, SysAcl after) {
+    @Override
+    public void saveAclLog(SysAcl before, SysAcl after) {
         sysLogMapper.
-                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ACL.getType()));
+                insertSelective(save(before, after, LogType.TYPE_ACL.getType()));
     }
 
-    private void saveRoleLog(SysRole before, SysRole after) {
+    @Override
+    public void saveRoleLog(SysRole before, SysRole after) {
         sysLogMapper.
-                insertSelective(save(before, after, before.getId(), after.getId(), LogType.TYPE_ROLE.getType()));
+                insertSelective(save(before, after, LogType.TYPE_ROLE.getType()));
     }
 
     @Override

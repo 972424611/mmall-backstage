@@ -9,6 +9,7 @@ import com.aekc.mmall.exception.AclException;
 import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.param.AclParam;
 import com.aekc.mmall.service.SysAclService;
+import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.utils.IpUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class SysAclServiceImpl implements SysAclService {
 
     @Autowired
     private SysAclMapper sysAclMapper;
+
+    @Autowired
+    private SysLogService sysLogService;
 
     private boolean checkExist(int aclModuleId, String name, Integer id) {
         return sysAclMapper.countByNameAndAclModuleId(aclModuleId, name, id) > 0;
@@ -47,6 +51,7 @@ public class SysAclServiceImpl implements SysAclService {
         acl.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         acl.setOperateTime(new Date());
         sysAclMapper.insertSelective(acl);
+        sysLogService.saveAclLog(null, acl);
     }
 
     @Override
@@ -66,6 +71,7 @@ public class SysAclServiceImpl implements SysAclService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         sysAclMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveAclLog(before, after);
     }
 
     @Override

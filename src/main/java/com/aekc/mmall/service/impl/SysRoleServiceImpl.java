@@ -10,6 +10,7 @@ import com.aekc.mmall.exception.RoleException;
 import com.aekc.mmall.model.SysRole;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.param.RoleParam;
+import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.service.SysRoleService;
 import com.aekc.mmall.utils.IpUtil;
 import com.google.common.collect.Lists;
@@ -37,6 +38,9 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Autowired
     private SysUserMapper sysUserMapper;
 
+    @Autowired
+    private SysLogService sysLogService;
+
     private boolean checkExist(String name, Integer id) {
         return sysRoleMapper.countByName(name, id) > 0;
     }
@@ -53,6 +57,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         role.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         role.setOperateTime(new Date());
         sysRoleMapper.insertSelective(role);
+        sysLogService.saveRoleLog(null, role);
     }
 
     @Override
@@ -71,6 +76,7 @@ public class SysRoleServiceImpl implements SysRoleService {
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
         sysRoleMapper.updateByPrimaryKeySelective(after);
+        sysLogService.saveRoleLog(before, after);
     }
 
     @Override
