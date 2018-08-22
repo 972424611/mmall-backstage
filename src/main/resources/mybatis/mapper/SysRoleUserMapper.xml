@@ -30,7 +30,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysRoleUser" >
+  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysRoleUser" keyProperty="id" useGeneratedKeys="true">
     insert into sys_role_user
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -130,4 +130,13 @@
       (#{roleUser.roleId}, #{roleUser.userId}, #{roleUser.operator}, #{roleUser.operateTime}, #{roleUser.operateIp})
     </foreach>
   </insert>
+  
+  <select id="selectUserIdListByRoleIdList" parameterType="map" resultType="int">
+    SELECT user_id
+    FROM sys_role_user
+    WHERE role_id IN
+    <foreach collection="roleIdList" item="roleId" open="(" close=")" separator=",">
+      #{roleId}
+    </foreach>
+  </select>
 </mapper>

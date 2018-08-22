@@ -1,10 +1,7 @@
 package com.aekc.mmall.beans;
 
-import lombok.Data;
-
 import javax.validation.constraints.Min;
 
-@Data
 public class PageQuery {
 
     @Min(value = 1, message = "当前页码不合法")
@@ -14,4 +11,28 @@ public class PageQuery {
     private int pageSize = 10;
 
     private int offset;
+
+    public int getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(int pageNo) {
+        this.pageNo = pageNo;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(int pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public int getOffset() {
+        return (pageNo - 1) * pageSize;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
 }

@@ -77,8 +77,8 @@ public class UserServiceImpl implements UserService {
         payload.put("uid", String.valueOf(userId));
         // 生成时间:当前
         payload.put("iat", date.getTime());
-        // 过期时间10分钟(单位毫秒)
-        payload.put("ext", date.getTime() + 1000*60*10);
+        // 过期时间30分钟(单位毫秒)
+        payload.put("ext", date.getTime() + 1000*60*30);
         return JwtUtil.createToken(payload);
     }
 

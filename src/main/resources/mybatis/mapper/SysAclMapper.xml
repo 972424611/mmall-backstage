@@ -29,7 +29,7 @@
     delete from sys_acl
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.aekc.mmall.model.SysAcl" >
+  <insert id="insert" parameterType="com.aekc.mmall.model.SysAcl">
     insert into sys_acl (id, code, name, 
       acl_module_id, url, type, 
       status, seq, remark, 
@@ -41,7 +41,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysAcl" >
+  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysAcl" keyProperty="id" useGeneratedKeys="true">
     insert into sys_acl
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -213,5 +213,12 @@
     WHERE acl_module_id = #{aclModuleId}
     ORDER BY seq ASC, name ASC
     LIMIT #{pageQuery.offset}, #{pageQuery.pageSize}
+  </select>
+  
+  <select id="selectByUrl" parameterType="string" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM sys_acl
+    WHERE url = #{url}
+    <!-- url is not null and url != '' and #{url} REGEXP url -->
   </select>
 </mapper>

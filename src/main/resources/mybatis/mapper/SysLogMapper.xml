@@ -42,7 +42,7 @@
       #{status,jdbcType=INTEGER}, #{oldValue,jdbcType=LONGVARCHAR}, #{newValue,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysLogWithBLOBs" >
+  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysLogWithBLOBs" keyProperty="id" useGeneratedKeys="true">
     insert into sys_log
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

@@ -1,5 +1,6 @@
 package com.aekc.mmall.config;
 
+import com.aekc.mmall.interceptor.AclControlInterceptor;
 import com.aekc.mmall.interceptor.HttpInterceptor;
 import com.aekc.mmall.interceptor.JwtInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,13 @@ public class InterceptorConfiguration implements WebMvcConfigurer {
     @Autowired
     private JwtInterceptor jwtInterceptor;
 
+    @Autowired
+    private AclControlInterceptor aclControlInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(httpInterceptor).addPathPatterns("/**");
         registry.addInterceptor(jwtInterceptor).addPathPatterns("/sys/**");
+        registry.addInterceptor(aclControlInterceptor).addPathPatterns("/sys/**");
     }
 }

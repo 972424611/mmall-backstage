@@ -26,5 +26,5 @@ public interface SysRoleMapper {
 
     List<SysRole> selectAllRole();
 
-    List<SysRole> selectByIdList(List<Integer> roleIdList);
+    List<SysRole> selectByIdList(@Param("roleIdList") List<Integer> roleIdList);
 }

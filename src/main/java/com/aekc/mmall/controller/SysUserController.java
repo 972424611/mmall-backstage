@@ -3,6 +3,8 @@ package com.aekc.mmall.controller;
 import com.aekc.mmall.beans.PageQuery;
 import com.aekc.mmall.beans.PageResult;
 import com.aekc.mmall.common.JsonData;
+import com.aekc.mmall.common.RequestHolder;
+import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.param.UserParam;
 import com.aekc.mmall.service.SysRoleService;
 import com.aekc.mmall.service.SysTreeService;
@@ -53,10 +55,18 @@ public class SysUserController {
 
     @ResponseBody
     @RequestMapping(value = "/acls")
-    public JsonData acls(@RequestParam("userId") int userId) {
+    public JsonData acls(@RequestParam("userId") Integer userId) {
         Map<String, Object> map = Maps.newHashMap();
         map.put("acls", sysTreeService.userAclTree(userId));
         map.put("roles", sysRoleService.getRoleListByUserId(userId));
         return JsonData.success();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/get")
+    public JsonData get() {
+        SysUser sysUser = RequestHolder.getCurrentUser();
+        sysUser.setPassword(null);
+        return JsonData.success(sysUser);
     }
 }

@@ -19,16 +19,13 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/logout.page")
+    @RequestMapping("/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        request.getSession().invalidate();
-        String path = "signin.jsp";
-        response.sendRedirect(path);
+
     }
 
     @GetMapping(value = "/login")
     public JsonData login(HttpServletRequest request, HttpServletResponse response) {
-        //
         return userService.login(request, response);
     }
 }

@@ -32,7 +32,7 @@
       #{status,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, 
       #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysRole" >
+  <insert id="insertSelective" parameterType="com.aekc.mmall.model.SysRole" keyProperty="id" useGeneratedKeys="true">
     insert into sys_role
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -139,5 +139,14 @@
     <if test="id != null">
       AND id != #{id}
     </if>
+  </select>
+  
+  <select id="selectByIdList" parameterType="map" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM sys_role
+    WHERE id IN
+    <foreach collection="roleIdList" item="id" open="(" close=")" separator=",">
+      #{id}
+    </foreach>
   </select>
 </mapper>
