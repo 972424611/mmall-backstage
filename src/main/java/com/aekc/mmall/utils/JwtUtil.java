@@ -8,7 +8,9 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -22,8 +24,14 @@ public class JwtUtil {
     /**
      * 公共秘钥－保存在服务端，客户端是不知道该秘钥的，防止被攻击。(signature)
      */
-    private static final byte[] SECRET = "1234567890qwertyuiopasdfghjklzxcvbnm".getBytes();
+    @Value("${token.secret}")
+    private static String SECRET;
 
+    /**
+     * token过期时间
+     */
+    @Value("${token.expiration}")
+    private static Long EXPIRATION;
 
     /**
      * 初始化head部分的数据为(第一部分)
@@ -45,7 +53,7 @@ public class JwtUtil {
         JWSObject jwsObject = new JWSObject(HEADER, new Payload(new JSONObject(payload)));
         try {
             // 将jwsObject进行HMAC签名，相当于加密(第三部分)
-            jwsObject.sign(new MACSigner(SECRET));
+            jwsObject.sign(new MACSigner(SECRET.getBytes()));
             tokenString = jwsObject.serialize();
         } catch (JOSEException e) {
             LOGGER.error("签名失败: {}", e.getMessage());
@@ -66,7 +74,7 @@ public class JwtUtil {
             JWSObject jwsObject = JWSObject.parse(token);
             // palload就是JWT构成的第二部分不过这里自定义的是私有声明(标准中注册的声明, 公共的声明)
             Payload payload = jwsObject.getPayload();
-            JWSVerifier verifier = new MACVerifier(SECRET);
+            JWSVerifier verifier = new MACVerifier(SECRET.getBytes());
             if(jwsObject.verify(verifier)) {
                 JSONObject jsonObject = payload.toJSONObject();
                 // token检验成功（此时没有检验是否过期）
@@ -93,5 +101,23 @@ public class JwtUtil {
             resultMap.put("state", TokenState.INVALID.toString());
         }
         return resultMap;
+    }
+
+    /**
+     * JWT的组成：Header + payload + signature
+     * Payload(载荷)的组成信息，私有声明(标准中注册的声明和公共的声明并未使用)
+     * @param userId 用户id
+     * @return token
+     */
+    public static String createTokenByUserId(Integer userId) {
+        Map<String, Object> payload = Maps.newHashMap();
+        Date date = new Date();
+        // 用户id
+        payload.put("uid", String.valueOf(userId));
+        // 生成时间:当前
+        payload.put("iat", date.getTime());
+        // 过期时间30分钟(单位毫秒)
+        payload.put("ext", date.getTime() + EXPIRATION);
+        return createToken(payload);
     }
 }
