@@ -8,7 +8,6 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.Map;
@@ -24,14 +23,12 @@ public class JwtUtil {
     /**
      * 公共秘钥－保存在服务端，客户端是不知道该秘钥的，防止被攻击。(signature)
      */
-    @Value("${token.secret}")
-    private static String SECRET;
+    private static final String SECRET = "1234567890qwertyuiopasdfghjklzxcvbnm";
 
     /**
      * token过期时间
      */
-    @Value("${token.expiration}")
-    private static Long EXPIRATION;
+    private static final Long EXPIRATION = 1000*60*30L;
 
     /**
      * 初始化head部分的数据为(第一部分)

@@ -36,6 +36,12 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
         <!-- spring-boot整合mybatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -122,6 +128,7 @@
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>5.14</version>
         </dependency>
+
 
     </dependencies>
 
