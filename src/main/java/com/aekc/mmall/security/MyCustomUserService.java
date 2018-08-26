@@ -4,19 +4,17 @@ import com.aekc.mmall.dao.SysUserMapper;
 import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.service.SysCoreService;
-import com.aekc.mmall.utils.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
+@Component
 public class MyCustomUserService implements UserDetailsService {
 
     @Autowired
@@ -31,13 +29,16 @@ public class MyCustomUserService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        MyUserDetails myUserDetails = new MyUserDetails();
+        myUserDetails.setUsername(username);
         SysUser sysUser = sysUserMapper.selectByKeyword(username);
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         List<SysAcl> sysAclList = sysCoreService.getUserAclList(sysUser.getId());
         for(SysAcl sysAcl : sysAclList) {
             authorityList.add(new SimpleGrantedAuthority(sysAcl.getName()));
         }
-        sysUser.setPassword(SecurityUtil.encrypt(sysUser.getPassword()));
-        return new User(sysUser.getUsername(), sysUser.getPassword(), authorityList);
+        myUserDetails.setAuthorities(authorityList);
+        myUserDetails.setPassword(sysUser.getPassword());
+        return myUserDetails;
     }
 }

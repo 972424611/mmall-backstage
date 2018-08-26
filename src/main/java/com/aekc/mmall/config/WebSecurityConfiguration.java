@@ -1,7 +1,8 @@
 package com.aekc.mmall.config;
 
-import com.aekc.mmall.security.MyCustomUserService;
-import com.aekc.mmall.security.MyFilterSecurityInterceptor;
+import com.aekc.mmall.security.*;
+import com.aekc.mmall.security.login.MyAuthenticationFailHandler;
+import com.aekc.mmall.security.login.MyAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -9,33 +10,32 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootConfiguration
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
+    private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+    @Autowired
+    private MyAuthenticationFailHandler myAuthenticationFailHandler;
 
     @Bean
     UserDetailsService customUserService() {
         return new MyCustomUserService();
     }
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserService());
+        // 使用自定义UserDetailsService
+        auth.userDetailsService(customUserService()).passwordEncoder(new BCryptPasswordEncoder());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                // 该类型的请求不需要权限验证
-                .antMatchers("/user/**").permitAll()
-                // 其他的都需要权限校验
-                .anyRequest().authenticated()
-                // 关闭csrf防御机制(跨域请求伪造)
+        http.formLogin().loginProcessingUrl("/user/login")
+                //　自定义的登录验证成功或失败后的去向
+                .successHandler(myAuthenticationSuccessHandler).failureHandler(myAuthenticationFailHandler)
+                // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
-        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
     }
 }

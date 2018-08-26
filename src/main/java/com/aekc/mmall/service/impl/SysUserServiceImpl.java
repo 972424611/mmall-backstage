@@ -14,6 +14,7 @@ import com.aekc.mmall.utils.IpUtil;
 import com.aekc.mmall.utils.SecurityUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -45,6 +46,7 @@ public class SysUserServiceImpl implements SysUserService {
         if(checkEmailExist(param.getMail(), param.getId())) {
             throw new UserException("邮箱已被占用");
         }
+
         String password = SecurityUtil.encrypt(SecurityUtil.randomPassword());
         SysUser sysUser = new SysUser();
         BeanUtils.copyProperties(param, sysUser);
@@ -108,6 +110,13 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public SysUser findByUserId(int userId) {
         return sysUserMapper.selectByPrimaryKey(userId);
+    }
+
+    public static void main(String[] args) {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String password = bCryptPasswordEncoder.encode("admin");
+        String s = "$2a$10$8iunqGnfaG2iQW3RTdckEOb.XSWnJPSVLcl.PLPIvNO0D8sP.231a";
+        System.out.println(password);
     }
 
 }
