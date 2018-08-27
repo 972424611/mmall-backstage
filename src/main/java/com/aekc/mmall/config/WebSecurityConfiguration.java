@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsUtils;
 
 @SpringBootConfiguration
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -19,6 +20,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
     @Autowired
     private MyAuthenticationFailHandler myAuthenticationFailHandler;
+
 
     @Bean
     UserDetailsService customUserService() {
@@ -35,6 +37,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.formLogin().loginProcessingUrl("/user/login")
                 //　自定义的登录验证成功或失败后的去向
                 .successHandler(myAuthenticationSuccessHandler).failureHandler(myAuthenticationFailHandler)
+                //　需要登录才能访问其他请求(不会拦截/user/login登录请求)
+                .and().authorizeRequests().requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+                .anyRequest().authenticated()
                 // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
     }
