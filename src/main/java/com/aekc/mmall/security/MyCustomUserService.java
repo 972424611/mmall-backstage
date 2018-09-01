@@ -27,16 +27,30 @@ public class MyCustomUserService implements UserDetailsService {
      * 登陆验证时，通过username获取用户的所有权限信息
      * 并返回User放到spring的全局缓存SecurityContextHolder中，以供授权器使用
      */
-    @Override
+    /*@Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         MyUserDetails myUserDetails = new MyUserDetails();
         myUserDetails.setUsername(username);
         SysUser sysUser = sysUserMapper.selectByKeyword(username);
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         List<SysAcl> sysAclList = sysCoreService.getUserAclList(sysUser.getId());
+
         for(SysAcl sysAcl : sysAclList) {
             authorityList.add(new SimpleGrantedAuthority(sysAcl.getName()));
         }
+        myUserDetails.setAuthorities(authorityList);
+        myUserDetails.setPassword(sysUser.getPassword());
+        return myUserDetails;
+    }*/
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        MyUserDetails myUserDetails = new MyUserDetails();
+        myUserDetails.setUsername(username);
+        SysUser sysUser = sysUserMapper.selectByKeyword(username);
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
         myUserDetails.setAuthorities(authorityList);
         myUserDetails.setPassword(sysUser.getPassword());
         return myUserDetails;
