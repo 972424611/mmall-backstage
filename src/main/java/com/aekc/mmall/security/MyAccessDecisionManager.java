@@ -1,12 +1,16 @@
 package com.aekc.mmall.security;
 
 import com.aekc.mmall.exception.CustomException;
+import com.aekc.mmall.security.exception.MyAccessDeniedException;
+import com.aekc.mmall.security.exception.MyAuthenticationException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -28,19 +32,22 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
      * @param collection 为MyInvocationSecurityMetadataSource的getAttributes(Object object)这个方法返回的结果，此方法是为了判定用户请求的url 是否在权限表中，如果在权限表中，则返回给 decide 方法，用来判定用户是否有此权限。如果不在权限表中则放行。
      */
     @Override
-    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) throws CustomException {
-        if(CollectionUtils.isEmpty(collection)) {
-            return;
-        }
-        for (ConfigAttribute configuration : collection) {
-            String needAcl = configuration.getAttribute();
-            for (GrantedAuthority authority : authentication.getAuthorities()) {
-                if (needAcl.equals(authority.getAuthority())) {
-                    return;
-                }
-            }
-        }
-        throw new CustomException("asdddd");
+    public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) {
+
+        throw new MyAuthenticationException("ttttt");
+
+//        if(CollectionUtils.isEmpty(collection)) {
+//            return;
+//        }
+//        for (ConfigAttribute configuration : collection) {
+//            String needAcl = configuration.getAttribute();
+//            for (GrantedAuthority authority : authentication.getAuthorities()) {
+//                if (needAcl.equals(authority.getAuthority())) {
+//                    return;
+//                }
+//            }
+//        }
+//        throw new MyAccessDeniedException("asdddd");
     }
 
     @Override

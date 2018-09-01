@@ -1,6 +1,8 @@
 package com.aekc.mmall.config;
 
 import com.aekc.mmall.security.*;
+import com.aekc.mmall.security.exception.MyAccessDeniedHandler;
+import com.aekc.mmall.security.exception.MyAuthenticationEntryPoint;
 import com.aekc.mmall.security.login.MyAuthenticationFailHandler;
 import com.aekc.mmall.security.login.MyAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
 
+    @Autowired
+    private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+
+    @Autowired
+    private MyAccessDeniedHandler myAccessDeniedHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
@@ -55,6 +63,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
         http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
-        http.addFilterBefore(new MyUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        //http.addFilterBefore(new MyUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.access.intercept.AbstractSecurityInterceptor;
 import org.springframework.security.access.intercept.InterceptorStatusToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +46,7 @@ public class MyFilterSecurityInterceptor extends AbstractSecurityInterceptor imp
     private void invoke(FilterInvocation filterInvocation) throws IOException, ServletException {
         // 里面调用MyInvocationSecurityMetadataSource的getAttributes(Object object)这个方法获取filterInvocation对应的所有权限
         // 再调用MyAccessDecisionManager的decide方法来校验用户的权限是否足够
+
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         authorityList.add(new SimpleGrantedAuthority("角色列表"));
