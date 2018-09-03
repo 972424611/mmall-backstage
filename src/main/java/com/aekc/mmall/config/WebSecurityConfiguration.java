@@ -63,7 +63,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
         http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
-        //http.addFilterBefore(new MyUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new MyUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 }
