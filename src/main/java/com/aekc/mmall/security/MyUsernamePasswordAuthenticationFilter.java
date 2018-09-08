@@ -21,24 +21,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public  class MyUsernamePasswordAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
-
-    public MyUsernamePasswordAuthenticationFilter() {
-        super(new AntPathRequestMatcher("/user/login", "POST"));
-    }
-
+@Component
+public  class MyUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
-    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
-        req.setAttribute("username", "123");
-        req.setAttribute("password", "123345");
-        HttpServletRequest request = (HttpServletRequest) req;
-        chain.doFilter(req, res);
+    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken("18389667224", "admin");
+        return this.getAuthenticationManager().authenticate(authRequest);
     }
-
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
-        return null;
-    }
-
 }
