@@ -18,7 +18,7 @@ import java.util.*;
  * 读取url资源
  */
 @Component
-public class MyInvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
+public class InvocationSecurityMetadataSource implements FilterInvocationSecurityMetadataSource {
 
     @Autowired
     private SysAclMapper sysAclMapper;

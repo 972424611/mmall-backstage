@@ -29,7 +29,7 @@ public class RequestHolder {
         return requestHolder.get();
     }
 
-    public static void remove() {
+    public static void clean() {
         userHolder.remove();
         requestHolder.remove();
     }

@@ -1,13 +1,16 @@
 package com.aekc.mmall.security;
 
+import com.aekc.mmall.model.SysUser;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 
+@Data
 @Component
-public class MyUserDetails implements UserDetails {
+public class CustomUserDetails implements UserDetails {
 
     private String username;
 
@@ -15,32 +18,7 @@ public class MyUserDetails implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        this.authorities = authorities;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
+    private SysUser sysUser;
 
     @Override
     public boolean isAccountNonExpired() {

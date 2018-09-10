@@ -1,16 +1,11 @@
 package com.aekc.mmall.security;
 
-import com.aekc.mmall.exception.CustomException;
-import com.aekc.mmall.security.exception.MyAccessDeniedException;
-import com.aekc.mmall.security.exception.MyAuthenticationException;
+import com.aekc.mmall.security.authentication.MyAuthenticationException;
+import com.aekc.mmall.security.authorization.MyAccessDeniedException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.ConfigAttribute;
-import org.springframework.security.authentication.AccountExpiredException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +18,7 @@ import java.util.Collection;
  * 控制访问权限
  */
 @Component
-public class MyAccessDecisionManager implements AccessDecisionManager {
+public class PermissionCheck implements AccessDecisionManager {
 
     /**
      * 方法是判定是否拥有权限的决策方法，
@@ -34,20 +29,18 @@ public class MyAccessDecisionManager implements AccessDecisionManager {
     @Override
     public void decide(Authentication authentication, Object o, Collection<ConfigAttribute> collection) {
 
-        throw new MyAuthenticationException("ttttt");
-
-//        if(CollectionUtils.isEmpty(collection)) {
-//            return;
-//        }
-//        for (ConfigAttribute configuration : collection) {
-//            String needAcl = configuration.getAttribute();
-//            for (GrantedAuthority authority : authentication.getAuthorities()) {
-//                if (needAcl.equals(authority.getAuthority())) {
-//                    return;
-//                }
-//            }
-//        }
-//        throw new MyAccessDeniedException("asdddd");
+        if(CollectionUtils.isEmpty(collection)) {
+            return;
+        }
+        for (ConfigAttribute configuration : collection) {
+            String needAcl = configuration.getAttribute();
+            for (GrantedAuthority authority : authentication.getAuthorities()) {
+                if (needAcl.equals(authority.getAuthority())) {
+                    return;
+                }
+            }
+        }
+        throw new MyAccessDeniedException("权限不足");
     }
 
     @Override

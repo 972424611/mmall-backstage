@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class MyCustomUserService implements UserDetailsService {
+public class CustomUserService implements UserDetailsService {
 
     @Autowired
     private SysUserMapper sysUserMapper;
@@ -27,32 +27,32 @@ public class MyCustomUserService implements UserDetailsService {
      * 登陆验证时，通过username获取用户的所有权限信息
      * 并返回User放到spring的全局缓存SecurityContextHolder中，以供授权器使用
      */
-    /*@Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MyUserDetails myUserDetails = new MyUserDetails();
-        myUserDetails.setUsername(username);
-        SysUser sysUser = sysUserMapper.selectByKeyword(username);
-        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        List<SysAcl> sysAclList = sysCoreService.getUserAclList(sysUser.getId());
-
-        for(SysAcl sysAcl : sysAclList) {
-            authorityList.add(new SimpleGrantedAuthority(sysAcl.getName()));
-        }
-        myUserDetails.setAuthorities(authorityList);
-        myUserDetails.setPassword(sysUser.getPassword());
-        return myUserDetails;
-    }*/
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MyUserDetails myUserDetails = new MyUserDetails();
-        myUserDetails.setUsername(username);
+        CustomUserDetails customUserDetails = new CustomUserDetails();
+        customUserDetails.setUsername(username);
         SysUser sysUser = sysUserMapper.selectByKeyword(username);
+        List<SysAcl> userAclList = sysCoreService.getUserAclList(sysUser.getId());
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        authorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
-        myUserDetails.setAuthorities(authorityList);
-        myUserDetails.setPassword(sysUser.getPassword());
-        return myUserDetails;
+        for(SysAcl acl : userAclList) {
+            authorityList.add(new SimpleGrantedAuthority(acl.getUrl()));
+        }
+        customUserDetails.setAuthorities(authorityList);
+        customUserDetails.setPassword(sysUser.getPassword());
+        return customUserDetails;
+    }
+
+    public CustomUserDetails loadUserByUserId(Integer userId) {
+        CustomUserDetails customUserDetails = new CustomUserDetails();
+        SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
+        customUserDetails.setUsername(sysUser.getUsername());
+        List<SysAcl> userAclList = sysCoreService.getUserAclList(sysUser.getId());
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        for(SysAcl acl : userAclList) {
+            authorityList.add(new SimpleGrantedAuthority(acl.getUrl()));
+        }
+        customUserDetails.setAuthorities(authorityList);
+        customUserDetails.setSysUser(sysUser);
+        return customUserDetails;
     }
 }

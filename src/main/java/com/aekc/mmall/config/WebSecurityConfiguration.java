@@ -1,10 +1,10 @@
 package com.aekc.mmall.config;
 
 import com.aekc.mmall.security.*;
-import com.aekc.mmall.security.exception.MyAccessDeniedHandler;
-import com.aekc.mmall.security.exception.MyAuthenticationEntryPoint;
-import com.aekc.mmall.security.login.MyAuthenticationFailHandler;
-import com.aekc.mmall.security.login.MyAuthenticationSuccessHandler;
+import com.aekc.mmall.security.authorization.MyAccessDeniedHandler;
+import com.aekc.mmall.security.authentication.MyAuthenticationEntryPoint;
+import com.aekc.mmall.security.authentication.MyAuthenticationFailHandler;
+import com.aekc.mmall.security.authentication.MyAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -14,8 +14,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsUtils;
 
 @SpringBootConfiguration
@@ -28,11 +26,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private MyAuthenticationFailHandler myAuthenticationFailHandler;
 
     @Autowired
-    private MyFilterSecurityInterceptor myFilterSecurityInterceptor;
+    private JwtSecurityInterceptor jwtSecurityInterceptor;
 
     @Bean
     UserDetailsService customUserService() {
-        return new MyCustomUserService();
+        return new CustomUserService();
     }
 
     @Override
@@ -40,7 +38,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         // 使用自定义UserDetailsService
         auth.userDetailsService(customUserService()).passwordEncoder(new BCryptPasswordEncoder());
     }
-
 
     @Autowired
     private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
@@ -63,20 +60,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.anyRequest().authenticated()
                 // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
-        http.addFilterBefore(myFilterSecurityInterceptor, FilterSecurityInterceptor.class);
-        http.addFilter(myUsernamePasswordAuthenticationFilter());
-        //http.addFilterAfter(new MyUsernamePasswordAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtSecurityInterceptor, FilterSecurityInterceptor.class);
         http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 
-    @Bean
-    public MyUsernamePasswordAuthenticationFilter myUsernamePasswordAuthenticationFilter() throws Exception {
-        MyUsernamePasswordAuthenticationFilter myUsernamePasswordAuthenticationFilter = new MyUsernamePasswordAuthenticationFilter();
-        myUsernamePasswordAuthenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/user/login", "POST"));
-        myUsernamePasswordAuthenticationFilter.setAuthenticationManager(authenticationManager());
-        //自定义UsernamePasswordAuthenticationFilter就会导致原来configure中的.successHandler和.failureHandler失效
-        myUsernamePasswordAuthenticationFilter.setAuthenticationSuccessHandler(myAuthenticationSuccessHandler);
-        myUsernamePasswordAuthenticationFilter.setAuthenticationFailureHandler(myAuthenticationFailHandler);
-        return myUsernamePasswordAuthenticationFilter;
-    }
 }

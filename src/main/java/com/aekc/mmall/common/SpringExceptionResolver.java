@@ -50,6 +50,4 @@ public class SpringExceptionResolver implements HandlerExceptionResolver {
         }
         return null;
     }
-
-
 }
