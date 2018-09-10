@@ -29,25 +29,18 @@ import java.util.Map;
 @Component
 public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
-    /**
-     * 配置文件注入
-     */
-    private final FilterInvocationSecurityMetadataSource securityMetadataSource;
-
-    private final CustomUserService customUserService;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtSecurityInterceptor.class);
+    @Autowired
+    private FilterInvocationSecurityMetadataSource securityMetadataSource;
 
     @Autowired
-    public JwtSecurityInterceptor(CustomUserService customUserService, FilterInvocationSecurityMetadataSource securityMetadataSource) {
-        this.customUserService = customUserService;
-        this.securityMetadataSource = securityMetadataSource;
-    }
+    private CustomUserDetailService customUserDetailService;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtSecurityInterceptor.class);
 
     private void addRequestHolder(HttpServletRequest request) {
         JSONObject jsonObject = (JSONObject) request.getAttribute("data");
         String userId = jsonObject.getAsString("uid");
-        CustomUserDetails customUserDetails = customUserService.loadUserByUserId(Integer.valueOf(userId));
+        CustomUserDetails customUserDetails = customUserDetailService.loadUserByUserId(Integer.valueOf(userId));
         UsernamePasswordAuthenticationToken authentication
                 = new UsernamePasswordAuthenticationToken(customUserDetails.getUsername(), null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -63,6 +56,7 @@ public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implemen
             case VALID:
                 request.setAttribute("data", resultMap.get("data"));
                 addRequestHolder(request);
+                break;
             case EXPIRED:
             case INVALID:
                 LOGGER.warn("无效token");
@@ -79,14 +73,20 @@ public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implemen
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        System.out.println(request.getMethod() + "--" + request.getRequestURL());
         // 忽略springSecurity框架自带的/error
         if(request.getRequestURL().toString().contains("/error")) {
             return;
         }
+        FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
+        // 忽略OPTIONS请求
+        if("OPTIONS".equals(request.getMethod())) {
+            //invoke(filterInvocation);
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         //校验token
         checkToken(request);
-
-        FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
         invoke(filterInvocation);
     }
 

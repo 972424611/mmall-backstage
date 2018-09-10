@@ -30,7 +30,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     UserDetailsService customUserService() {
-        return new CustomUserService();
+        return new CustomUserDetailService();
     }
 
     @Override
@@ -60,7 +60,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 //.anyRequest().authenticated()
                 // 禁用csrf防御机制(跨域请求伪造)，这么做在测试和开发会比较方便。
                 .and().csrf().disable();
-        http.addFilterBefore(jwtSecurityInterceptor, FilterSecurityInterceptor.class);
+        http.addFilterAfter(jwtSecurityInterceptor, FilterSecurityInterceptor.class);
         http.exceptionHandling().authenticationEntryPoint(myAuthenticationEntryPoint).accessDeniedHandler(myAccessDeniedHandler);
     }
 
