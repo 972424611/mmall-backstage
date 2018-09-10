@@ -29,6 +29,8 @@ import java.util.Map;
 @Component
 public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implements Filter {
 
+    private static final String FILTER_APPLIED = "__spring_security_jwtSecurityInterceptor_filterApplied";
+
     @Autowired
     private FilterInvocationSecurityMetadataSource securityMetadataSource;
 
@@ -73,7 +75,12 @@ public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implemen
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        System.out.println(request.getMethod() + "--" + request.getRequestURL());
+        // 防止同一个请求重复请求
+        if(servletRequest.getAttribute(FILTER_APPLIED) != null) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+        servletRequest.setAttribute(FILTER_APPLIED, true);
         // 忽略springSecurity框架自带的/error
         if(request.getRequestURL().toString().contains("/error")) {
             return;
