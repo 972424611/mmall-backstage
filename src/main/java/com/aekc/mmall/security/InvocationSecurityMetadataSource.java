@@ -1,7 +1,10 @@
 package com.aekc.mmall.security;
 
 import com.aekc.mmall.dao.SysAclMapper;
+import com.aekc.mmall.dao.SysRoleAclMapper;
+import com.aekc.mmall.dao.SysRoleMapper;
 import com.aekc.mmall.model.SysAcl;
+import com.aekc.mmall.model.SysRole;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
@@ -23,19 +26,39 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
     @Autowired
     private SysAclMapper sysAclMapper;
 
+    @Autowired
+    private SysRoleAclMapper sysRoleAclMapper;
+
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
+
     private HashMap<String, Collection<ConfigAttribute>> map = null;
 
     /**
-     * 加载权限表中所有权限
+     * 加载数据库中所有权限
      */
     private void loadResourceDefine() {
         map = Maps.newHashMap();
         List<SysAcl> sysAclList = sysAclMapper.selectAllAcl();
         for(SysAcl sysAcl : sysAclList) {
-            List<ConfigAttribute> configAttributeList = new ArrayList<>();
-            ConfigAttribute configAttribute = new SecurityConfig(sysAcl.getName());
-            configAttributeList.add(configAttribute);
-            map.put(sysAcl.getUrl(), configAttributeList);
+            List<Integer> roleIdList = sysRoleAclMapper.selectRoleIdListByAclId(sysAcl.getId());
+
+            List<SysRole> sysRoleList = new ArrayList<>();
+            for(Integer roleId : roleIdList) {
+                SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
+                sysRoleList.add(sysRole);
+            }
+
+            for(SysRole role : sysRoleList) {
+                ConfigAttribute configAttribute = new SecurityConfig(role.getName());
+                if(map.get(sysAcl.getUrl()) != null) {
+                    map.get(sysAcl.getUrl()).add(configAttribute);
+                } else {
+                    List<ConfigAttribute> configAttributeList = new ArrayList<>();
+                    configAttributeList.add(configAttribute);
+                    map.put(sysAcl.getUrl(), configAttributeList);
+                }
+            }
         }
     }
 
@@ -57,6 +80,7 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
                 return map.get(resUrl);
             }
         }
+        // 表示请求该url不需要权限
         return null;
     }
 

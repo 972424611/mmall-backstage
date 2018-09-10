@@ -1,7 +1,10 @@
 package com.aekc.mmall.security;
 
+import com.aekc.mmall.dao.SysRoleMapper;
+import com.aekc.mmall.dao.SysRoleUserMapper;
 import com.aekc.mmall.dao.SysUserMapper;
 import com.aekc.mmall.model.SysAcl;
+import com.aekc.mmall.model.SysRole;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.service.SysCoreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,10 @@ public class CustomUserDetailService implements UserDetailsService {
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private SysCoreService sysCoreService;
+    private SysRoleUserMapper sysRoleUserMapper;
+
+    @Autowired
+    private SysRoleMapper sysRoleMapper;
 
     /**
      * 登陆验证时，通过username获取用户的所有权限信息
@@ -32,10 +38,17 @@ public class CustomUserDetailService implements UserDetailsService {
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setUsername(username);
         SysUser sysUser = sysUserMapper.selectByKeyword(username);
-        List<SysAcl> userAclList = sysCoreService.getUserAclList(sysUser.getId());
+        List<Integer> roleIdList = sysRoleUserMapper.selectRoleIdListByUserId(sysUser.getId());
+
+        List<SysRole> sysRoleList = new ArrayList<>();
+        for(Integer roleId : roleIdList) {
+            SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
+            sysRoleList.add(sysRole);
+        }
+
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        for(SysAcl acl : userAclList) {
-            authorityList.add(new SimpleGrantedAuthority(acl.getUrl()));
+        for(SysRole sysRole : sysRoleList) {
+            authorityList.add(new SimpleGrantedAuthority(sysRole.getName()));
         }
         customUserDetails.setAuthorities(authorityList);
         customUserDetails.setPassword(sysUser.getPassword());
@@ -45,11 +58,17 @@ public class CustomUserDetailService implements UserDetailsService {
     public CustomUserDetails loadUserByUserId(Integer userId) {
         CustomUserDetails customUserDetails = new CustomUserDetails();
         SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
-        customUserDetails.setUsername(sysUser.getUsername());
-        List<SysAcl> userAclList = sysCoreService.getUserAclList(sysUser.getId());
+        List<Integer> roleIdList = sysRoleUserMapper.selectRoleIdListByUserId(sysUser.getId());
+
+        List<SysRole> sysRoleList = new ArrayList<>();
+        for(Integer roleId : roleIdList) {
+            SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
+            sysRoleList.add(sysRole);
+        }
+
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        for(SysAcl acl : userAclList) {
-            authorityList.add(new SimpleGrantedAuthority(acl.getUrl()));
+        for(SysRole sysRole : sysRoleList) {
+            authorityList.add(new SimpleGrantedAuthority(sysRole.getName()));
         }
         customUserDetails.setAuthorities(authorityList);
         customUserDetails.setSysUser(sysUser);
