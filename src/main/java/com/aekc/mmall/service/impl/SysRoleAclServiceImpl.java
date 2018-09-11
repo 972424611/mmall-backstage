@@ -6,6 +6,7 @@ import com.aekc.mmall.dao.SysRoleAclMapper;
 import com.aekc.mmall.enums.LogType;
 import com.aekc.mmall.model.SysLogWithBLOBs;
 import com.aekc.mmall.model.SysRoleAcl;
+import com.aekc.mmall.security.InvocationSecurityMetadataSource;
 import com.aekc.mmall.service.SysRoleAclService;
 import com.aekc.mmall.utils.IpUtil;
 import com.aekc.mmall.utils.JsonUtil;
@@ -39,6 +40,8 @@ public class SysRoleAclServiceImpl implements SysRoleAclService {
         }
         updateRoleAcls(roleId, aclIdList);
         saveRoleAclLog(roleId, originAclIdList, aclIdList);
+        // 提示权限更新了
+        InvocationSecurityMetadataSource.update = true;
     }
 
     @Transactional(rollbackFor = Exception.class)

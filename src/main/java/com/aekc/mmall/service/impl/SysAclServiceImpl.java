@@ -8,6 +8,7 @@ import com.aekc.mmall.dao.SysAclMapper;
 import com.aekc.mmall.exception.AclException;
 import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.param.AclParam;
+import com.aekc.mmall.security.InvocationSecurityMetadataSource;
 import com.aekc.mmall.service.SysAclService;
 import com.aekc.mmall.service.SysLogService;
 import com.aekc.mmall.utils.IpUtil;
@@ -52,6 +53,8 @@ public class SysAclServiceImpl implements SysAclService {
         acl.setOperateTime(new Date());
         sysAclMapper.insertSelective(acl);
         sysLogService.saveAclLog(null, acl);
+        // 提示权限更新了
+        InvocationSecurityMetadataSource.update = true;
     }
 
     @Override
@@ -72,6 +75,8 @@ public class SysAclServiceImpl implements SysAclService {
         after.setOperateTime(new Date());
         sysAclMapper.updateByPrimaryKeySelective(after);
         sysLogService.saveAclLog(before, after);
+        // 提示权限更新了
+        InvocationSecurityMetadataSource.update = true;
     }
 
     @Override

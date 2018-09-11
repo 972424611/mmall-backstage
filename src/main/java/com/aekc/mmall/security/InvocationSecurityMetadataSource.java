@@ -5,6 +5,7 @@ import com.aekc.mmall.dao.SysRoleAclMapper;
 import com.aekc.mmall.dao.SysRoleMapper;
 import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.model.SysRole;
+import com.aekc.mmall.service.SysRoleService;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
@@ -27,39 +28,41 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
     private SysAclMapper sysAclMapper;
 
     @Autowired
-    private SysRoleAclMapper sysRoleAclMapper;
+    private SysRoleService sysRoleService;
 
-    @Autowired
-    private SysRoleMapper sysRoleMapper;
+    private HashMap<String, Collection<ConfigAttribute>> authorizationMap = null;
 
-    private HashMap<String, Collection<ConfigAttribute>> map = null;
+    /**
+     * 判断数据库中的权限是否改变。如果为true则需要重置map
+     */
+    public static boolean update = false;
 
     /**
      * 加载数据库中所有权限
      */
     private void loadResourceDefine() {
-        map = Maps.newHashMap();
+        authorizationMap = Maps.newHashMap();
+        // 以url为key，value为请求该url所需要的角色
         List<SysAcl> sysAclList = sysAclMapper.selectAllAcl();
         for(SysAcl sysAcl : sysAclList) {
-            List<Integer> roleIdList = sysRoleAclMapper.selectRoleIdListByAclId(sysAcl.getId());
-
-            List<SysRole> sysRoleList = new ArrayList<>();
-            for(Integer roleId : roleIdList) {
-                SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
-                sysRoleList.add(sysRole);
+            if(sysAcl.getStatus() != 1) {
+                // 权限点无效
+                continue;
             }
-
+            List<SysRole> sysRoleList = sysRoleService.getRoleListByAclId(sysAcl.getId());
             for(SysRole role : sysRoleList) {
                 ConfigAttribute configAttribute = new SecurityConfig(role.getName());
-                if(map.get(sysAcl.getUrl()) != null) {
-                    map.get(sysAcl.getUrl()).add(configAttribute);
+                if(authorizationMap.get(sysAcl.getUrl()) != null) {
+                    authorizationMap.get(sysAcl.getUrl()).add(configAttribute);
                 } else {
                     List<ConfigAttribute> configAttributeList = new ArrayList<>();
                     configAttributeList.add(configAttribute);
-                    map.put(sysAcl.getUrl(), configAttributeList);
+                    authorizationMap.put(sysAcl.getUrl(), configAttributeList);
                 }
             }
         }
+        // 设置为false表示已经把map更新到最新
+        update = false;
     }
 
     /**
@@ -69,15 +72,19 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
      */
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-        if(map == null) {
-            loadResourceDefine();
+        if(authorizationMap == null || update) {
+            synchronized(InvocationSecurityMetadataSource.class) {
+                if(authorizationMap == null || update) {
+                    loadResourceDefine();
+                }
+            }
         }
         HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
-        for(Map.Entry<String, Collection<ConfigAttribute>> entry : map.entrySet()) {
+        for(Map.Entry<String, Collection<ConfigAttribute>> entry : authorizationMap.entrySet()) {
             String resUrl = entry.getKey();
             AntPathRequestMatcher matcher = new AntPathRequestMatcher(resUrl);
             if(matcher.matches(request)) {
-                return map.get(resUrl);
+                return authorizationMap.get(resUrl);
             }
         }
         // 表示请求该url不需要权限

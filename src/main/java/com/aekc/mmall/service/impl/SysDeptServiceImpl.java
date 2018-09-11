@@ -94,6 +94,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setOperator(RequestHolder.getCurrentUser().getUsername());
         after.setOperateIp(IpUtil.getRemoteIp(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
+        updateWithChild(before, after);
         sysLogService.saveDeptLog(before, after);
 
     }
