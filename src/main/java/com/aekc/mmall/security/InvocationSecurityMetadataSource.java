@@ -1,8 +1,6 @@
 package com.aekc.mmall.security;
 
 import com.aekc.mmall.dao.SysAclMapper;
-import com.aekc.mmall.dao.SysRoleAclMapper;
-import com.aekc.mmall.dao.SysRoleMapper;
 import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.model.SysRole;
 import com.aekc.mmall.service.SysRoleService;

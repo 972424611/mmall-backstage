@@ -7,6 +7,7 @@ import com.aekc.mmall.model.SysAcl;
 import com.aekc.mmall.model.SysRole;
 import com.aekc.mmall.model.SysUser;
 import com.aekc.mmall.service.SysCoreService;
+import com.aekc.mmall.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,10 +25,7 @@ public class CustomUserDetailService implements UserDetailsService {
     private SysUserMapper sysUserMapper;
 
     @Autowired
-    private SysRoleUserMapper sysRoleUserMapper;
-
-    @Autowired
-    private SysRoleMapper sysRoleMapper;
+    private SysRoleService sysRoleService;
 
     /**
      * 登陆验证时，通过username获取用户的所有权限信息
@@ -38,13 +36,8 @@ public class CustomUserDetailService implements UserDetailsService {
         CustomUserDetails customUserDetails = new CustomUserDetails();
         customUserDetails.setUsername(username);
         SysUser sysUser = sysUserMapper.selectByKeyword(username);
-        List<Integer> roleIdList = sysRoleUserMapper.selectRoleIdListByUserId(sysUser.getId());
 
-        List<SysRole> sysRoleList = new ArrayList<>();
-        for(Integer roleId : roleIdList) {
-            SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
-            sysRoleList.add(sysRole);
-        }
+        List<SysRole> sysRoleList = sysRoleService.getRoleListByUserId(sysUser.getId());
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         for(SysRole sysRole : sysRoleList) {
@@ -58,13 +51,7 @@ public class CustomUserDetailService implements UserDetailsService {
     public CustomUserDetails loadUserByUserId(Integer userId) {
         CustomUserDetails customUserDetails = new CustomUserDetails();
         SysUser sysUser = sysUserMapper.selectByPrimaryKey(userId);
-        List<Integer> roleIdList = sysRoleUserMapper.selectRoleIdListByUserId(sysUser.getId());
-
-        List<SysRole> sysRoleList = new ArrayList<>();
-        for(Integer roleId : roleIdList) {
-            SysRole sysRole = sysRoleMapper.selectByPrimaryKey(roleId);
-            sysRoleList.add(sysRole);
-        }
+        List<SysRole> sysRoleList = sysRoleService.getRoleListByUserId(sysUser.getId());
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
         for(SysRole sysRole : sysRoleList) {
