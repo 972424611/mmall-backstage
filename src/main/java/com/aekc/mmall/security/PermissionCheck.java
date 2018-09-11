@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 执行顺序
@@ -32,8 +34,12 @@ public class PermissionCheck implements AccessDecisionManager {
         if(CollectionUtils.isEmpty(collection)) {
             return;
         }
+        List<String> needRoleList = collection.stream()
+                        .map(ConfigAttribute::getAttribute).collect(Collectors.toList());
+        List<String> hasRole = authentication.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
         // 如果有交集
-        if(collection.removeAll(authentication.getAuthorities())) {
+        if(needRoleList.removeAll(hasRole)) {
             return;
         }
         throw new MyAccessDeniedException("权限不足");
