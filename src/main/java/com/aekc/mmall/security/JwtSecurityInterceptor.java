@@ -24,7 +24,6 @@ import java.util.Map;
 
 /**
  * 资源管理拦截器AbstractSecurityInterceptor
- *
  * @author Twilight
  */
 @Component

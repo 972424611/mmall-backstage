@@ -22,7 +22,6 @@ public class PermissionCheck implements AccessDecisionManager {
 
     /**
      * 方法是判定是否拥有权限的决策方法，
-     *
      * @param authentication 用户拥有的角色
      * @param o 包含客户端发起的请求的requset信息，可转换为 HttpServletRequest request = ((FilterInvocation) object).getHttpRequest();
      * @param collection 该请求所需要的角色
