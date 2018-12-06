@@ -1,10 +1,13 @@
 package com.aekc.mmall.config;
 
+import com.aekc.mmall.dao.SysRoleMapper;
 import com.aekc.mmall.security.*;
 import com.aekc.mmall.security.authorization.MyAccessDeniedHandler;
 import com.aekc.mmall.security.authentication.MyAuthenticationEntryPoint;
 import com.aekc.mmall.security.authentication.MyAuthenticationFailHandler;
 import com.aekc.mmall.security.authentication.MyAuthenticationSuccessHandler;
+import com.aekc.mmall.service.SysAclService;
+import com.aekc.mmall.service.SysRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +47,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private MyAccessDeniedHandler myAccessDeniedHandler;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

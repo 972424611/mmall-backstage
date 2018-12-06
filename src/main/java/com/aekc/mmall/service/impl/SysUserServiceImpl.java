@@ -40,10 +40,10 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void save(UserParam param) {
         BeanValidator.check(param);
-        if(checkTelephoneExist(param.getTelephone(), param.getId())) {
+        if (checkTelephoneExist(param.getTelephone(), param.getId())) {
             throw new UserException("电话已被占用");
         }
-        if(checkEmailExist(param.getMail(), param.getId())) {
+        if (checkEmailExist(param.getMail(), param.getId())) {
             throw new UserException("邮箱已被占用");
         }
 
@@ -63,14 +63,14 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void update(UserParam param) {
         BeanValidator.check(param);
-        if(checkTelephoneExist(param.getTelephone(), param.getId())) {
+        if (checkTelephoneExist(param.getTelephone(), param.getId())) {
             throw new UserException("电话已被占用");
         }
-        if(checkEmailExist(param.getMail(), param.getId())) {
+        if (checkEmailExist(param.getMail(), param.getId())) {
             throw new UserException("邮箱已被占用");
         }
         SysUser before = sysUserMapper.selectByPrimaryKey(param.getId());
-        if(before == null) {
+        if (before == null) {
             throw new UserException("待更新的用户不存在");
         }
         SysUser after = new SysUser();
@@ -92,7 +92,7 @@ public class SysUserServiceImpl implements SysUserService {
     public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery) {
         BeanValidator.check(pageQuery);
         int count = sysUserMapper.countByDeptId(deptId);
-        if(count > 0) {
+        if (count > 0) {
             List<SysUser> list = sysUserMapper.selectPageByDeptId(deptId, pageQuery);
             PageResult<SysUser> pageResult = new PageResult<>();
             pageResult.setTotal(count);

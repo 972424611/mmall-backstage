@@ -37,14 +37,14 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 前段ajax自定义headers字段，会出现了option请求，在GET请求之前。
         // 所以应该把他过滤掉，以免影响服务。但是不能返回false，如果返回false会导致后续请求不会继续。
-        if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
         //从请求头中获取token
         String token = request.getHeader("token");
         Map<String, Object> resultMap = JwtUtil.validToken(token);
         TokenState state = TokenState.getTokenState((String) resultMap.get("state"));
-        switch(state) {
+        switch (state) {
             case VALID:
                 //　取出payload中数据，放到request作用域中
                 request.setAttribute("data", resultMap.get("data"));

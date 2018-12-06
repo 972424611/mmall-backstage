@@ -9,7 +9,7 @@ import java.util.List;
 
 @Mapper
 public interface SysUserMapper {
-    
+
     int deleteByPrimaryKey(Integer id);
 
     int insert(SysUser record);

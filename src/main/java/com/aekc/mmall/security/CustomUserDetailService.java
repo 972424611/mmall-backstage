@@ -40,7 +40,7 @@ public class CustomUserDetailService implements UserDetailsService {
         List<SysRole> sysRoleList = sysRoleService.getRoleListByUserId(sysUser.getId());
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        for(SysRole sysRole : sysRoleList) {
+        for (SysRole sysRole : sysRoleList) {
             authorityList.add(new SimpleGrantedAuthority(sysRole.getName()));
         }
         customUserDetails.setAuthorities(authorityList);
@@ -54,7 +54,7 @@ public class CustomUserDetailService implements UserDetailsService {
         List<SysRole> sysRoleList = sysRoleService.getRoleListByUserId(sysUser.getId());
 
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-        for(SysRole sysRole : sysRoleList) {
+        for (SysRole sysRole : sysRoleList) {
             authorityList.add(new SimpleGrantedAuthority(sysRole.getName()));
         }
         customUserDetails.setAuthorities(authorityList);

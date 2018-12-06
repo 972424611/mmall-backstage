@@ -38,7 +38,7 @@ public class SysDeptServiceImpl implements SysDeptService {
 
     private String getLevel(Integer deptId) {
         SysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
-        if(dept == null) {
+        if (dept == null) {
             return null;
         }
         return dept.getLevel();
@@ -47,13 +47,13 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Override
     public void delete(Integer deptId) {
         SysDept dept = sysDeptMapper.selectByPrimaryKey(deptId);
-        if(dept == null) {
+        if (dept == null) {
             throw new DeptException("待删除的部门不存在, 无法删除");
         }
-        if(sysDeptMapper.countByParentId(dept.getId()) > 0) {
+        if (sysDeptMapper.countByParentId(dept.getId()) > 0) {
             throw new DeptException("当前部门下面有子部门，无法删除");
         }
-        if(sysUserMapper.countByDeptId(dept.getId()) > 0) {
+        if (sysUserMapper.countByDeptId(dept.getId()) > 0) {
             throw new DeptException("当前部门下面有用户，无法删除");
         }
         sysDeptMapper.deleteByPrimaryKey(deptId);
@@ -62,7 +62,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Override
     public void save(DeptParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getParentId(), param.getName(), param.getId())) {
+        if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new DeptException("在同一层级下存在相同名称的部门");
         }
         SysDept dept = new SysDept();
@@ -80,11 +80,11 @@ public class SysDeptServiceImpl implements SysDeptService {
     @Override
     public void update(DeptParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getParentId(), param.getName(), param.getId())) {
+        if (checkExist(param.getParentId(), param.getName(), param.getId())) {
             throw new DeptException("在同一层级下存在相同名称的部门");
         }
         SysDept before = sysDeptMapper.selectByPrimaryKey(param.getId());
-        if(before == null) {
+        if (before == null) {
             throw new DeptException("待更新的部门不存在");
         }
         SysDept after = new SysDept();
@@ -103,12 +103,12 @@ public class SysDeptServiceImpl implements SysDeptService {
     protected void updateWithChild(SysDept before, SysDept after) {
         String newLevelPrefix = after.getLevel();
         String oldLevelPrefix = before.getLevel();
-        if(!after.getLevel().equals(before.getLevel())) {
+        if (!after.getLevel().equals(before.getLevel())) {
             List<SysDept> deptList = sysDeptMapper.getChildDeptListByLevel(before.getLevel());
-            if(CollectionUtils.isNotEmpty(deptList)) {
-                for(SysDept dept : deptList) {
+            if (CollectionUtils.isNotEmpty(deptList)) {
+                for (SysDept dept : deptList) {
                     String level = dept.getLevel();
-                    if(level.indexOf(oldLevelPrefix) == 0) {
+                    if (level.indexOf(oldLevelPrefix) == 0) {
                         level = newLevelPrefix + level.substring(oldLevelPrefix.length());
                         dept.setLevel(level);
                     }

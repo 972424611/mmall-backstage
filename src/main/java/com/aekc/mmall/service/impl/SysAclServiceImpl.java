@@ -42,7 +42,7 @@ public class SysAclServiceImpl implements SysAclService {
     @Override
     public void save(AclParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
+        if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
             throw new AclException("当前权限模块下面存在相同名的权限点");
         }
         SysAcl acl = new SysAcl();
@@ -60,11 +60,11 @@ public class SysAclServiceImpl implements SysAclService {
     @Override
     public void update(AclParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
+        if (checkExist(param.getAclModuleId(), param.getName(), param.getId())) {
             throw new AclException("当前权限模块下面存在相同名的权限点");
         }
         SysAcl before = sysAclMapper.selectByPrimaryKey(param.getId());
-        if(before == null) {
+        if (before == null) {
             throw new AclException("待更新的权限点不存在");
         }
         SysAcl after = new SysAcl();
@@ -83,7 +83,7 @@ public class SysAclServiceImpl implements SysAclService {
     public PageResult getPageByAclModuleId(int aclModuleId, PageQuery pageQuery) {
         BeanValidator.check(pageQuery);
         int count = sysAclMapper.countByAclModuleId(aclModuleId);
-        if(count > 0) {
+        if (count > 0) {
             List<SysAcl> aclList = sysAclMapper.selectPageByAclModuleId(aclModuleId, pageQuery);
             PageResult<SysAcl> pageResult = new PageResult<>();
             pageResult.setTotal(count);

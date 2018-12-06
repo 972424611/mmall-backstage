@@ -24,7 +24,7 @@ public class SpringExceptionResolver implements HandlerExceptionResolver {
         String url = httpServletRequest.getRequestURL().toString();
         String defaultMsg = "System error";
         JsonData jsonData;
-        if(exception instanceof CustomException) {
+        if (exception instanceof CustomException) {
             jsonData = JsonData.fail(exception.getMessage());
             LOGGER.error("自定义异常, url: {}", url, exception.getMessage());
         } else {
@@ -36,7 +36,7 @@ public class SpringExceptionResolver implements HandlerExceptionResolver {
             httpServletResponse.setContentType("application/json;charset=UTF-8");
             writer = httpServletResponse.getWriter();
             String msg = JsonUtil.objectToJson(jsonData);
-            if(StringUtils.isNotBlank(msg)) {
+            if (StringUtils.isNotBlank(msg)) {
                 writer.write(msg);
                 writer.flush();
             }
@@ -44,7 +44,7 @@ public class SpringExceptionResolver implements HandlerExceptionResolver {
             e.printStackTrace();
             LOGGER.error("系统异常, PrintWriter写入异常");
         } finally {
-            if(writer != null) {
+            if (writer != null) {
                 writer.close();
             }
         }

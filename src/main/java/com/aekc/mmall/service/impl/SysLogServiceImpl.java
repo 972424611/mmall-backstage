@@ -51,10 +51,10 @@ public class SysLogServiceImpl implements SysLogService {
     private SysRoleUserService sysRoleUserService;
 
     private SysBase recover(SysBase before, SysLogWithBLOBs sysLogWithBLOBs) {
-        if(before == null) {
+        if (before == null) {
             throw new LogException("待还原的部门已经不存在了");
         }
-        if(StringUtils.isBlank(sysLogWithBLOBs.getNewValue())
+        if (StringUtils.isBlank(sysLogWithBLOBs.getNewValue())
                 || StringUtils.isBlank(sysLogWithBLOBs.getOldValue())) {
             throw new LogException("新增和删除操作不做还原");
         }
@@ -70,12 +70,12 @@ public class SysLogServiceImpl implements SysLogService {
     @SuppressWarnings("unchecked")
     public void recover(int id) {
         SysLogWithBLOBs sysLogWithBLOBs = sysLogMapper.selectByPrimaryKey(id);
-        if(sysLogWithBLOBs == null) {
+        if (sysLogWithBLOBs == null) {
             throw new LogException("待还原的记录不存在");
         }
         LogType logType = LogType.getLogType(sysLogWithBLOBs.getType());
         assert logType != null;
-        switch(logType) {
+        switch (logType) {
             case TYPE_DEPT:
                 SysDept beforeDept = sysDeptMapper.selectByPrimaryKey(sysLogWithBLOBs.getTargetId());
                 SysDept afterDept = (SysDept) recover(beforeDept, sysLogWithBLOBs);
@@ -108,14 +108,14 @@ public class SysLogServiceImpl implements SysLogService {
                 break;
             case TYPE_ROLE_ACL:
                 SysRole aclRole = sysRoleMapper.selectByPrimaryKey(sysLogWithBLOBs.getTargetId());
-                if(aclRole == null) {
+                if (aclRole == null) {
                     throw new LogException("角色已经不存在了");
                 }
                 sysRoleAclService.changeRoleAcls(sysLogWithBLOBs.getTargetId(),
                         JsonUtil.jsonToPojo(sysLogWithBLOBs.getOldValue(), List.class));
             case TYPE_ROLE_USER:
                 SysRole userRole = sysRoleMapper.selectByPrimaryKey(sysLogWithBLOBs.getTargetId());
-                if(userRole == null) {
+                if (userRole == null) {
                     throw new LogException("角色已经不存在了");
                 }
                 sysRoleUserService.changeRoleUsers(sysLogWithBLOBs.getTargetId(),
@@ -173,28 +173,28 @@ public class SysLogServiceImpl implements SysLogService {
         BeanValidator.check(page);
         SearchLogDto dto = new SearchLogDto();
         dto.setType(param.getType());
-        if(StringUtils.isNotBlank(param.getBeforeSeg())) {
+        if (StringUtils.isNotBlank(param.getBeforeSeg())) {
             dto.setBeforeSeg("%" + param.getBeforeSeg() + "%");
         }
-        if(StringUtils.isNotBlank(param.getAfterSeg())) {
+        if (StringUtils.isNotBlank(param.getAfterSeg())) {
             dto.setAfterSeg("%" + param.getAfterSeg() + "%");
         }
-        if(StringUtils.isNotBlank(param.getOperator())) {
+        if (StringUtils.isNotBlank(param.getOperator())) {
             dto.setOperator("%" + param.getOperator() + "%");
         }
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            if(StringUtils.isNotBlank(param.getFromTime())) {
+            if (StringUtils.isNotBlank(param.getFromTime())) {
                 dto.setFromTime(dateFormat.parse(param.getFromTime()));
             }
-            if(StringUtils.isNotBlank(param.getToTime())) {
+            if (StringUtils.isNotBlank(param.getToTime())) {
                 dto.setToTime(dateFormat.parse(param.getToTime()));
             }
         } catch (Exception e) {
             throw new LogException("传入的日期格式有问题, 正确的格式为: yyyy-MM-dd HH:mm:ss");
         }
         int count = sysLogMapper.countBySearchDto(dto);
-        if(count > 0) {
+        if (count > 0) {
             List<SysLogWithBLOBs> logList = sysLogMapper.selectPageListBySearchDto(dto, page);
             PageResult<SysLogWithBLOBs> pageResult = new PageResult<>();
             pageResult.setTotal(count);

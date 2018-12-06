@@ -19,12 +19,12 @@ public class BeanValidator {
     public static <T> Map<String, String> validate(T t, Class... groups) {
         Validator validator = validatorFactory.getValidator();
         Set validateResult = validator.validate(t, groups);
-        if(validateResult.isEmpty()) {
+        if (validateResult.isEmpty()) {
             return Collections.emptyMap();
-        }else {
+        } else {
             LinkedHashMap errors = Maps.newLinkedHashMap();
             Iterator iterator = validateResult.iterator();
-            while(iterator.hasNext()) {
+            while (iterator.hasNext()) {
                 ConstraintViolation violation = (ConstraintViolation) iterator.next();
                 errors.put(violation.getPropertyPath().toString(), violation.getMessage());
             }
@@ -37,26 +37,26 @@ public class BeanValidator {
         Iterator iterator = collection.iterator();
         Map errors;
         do {
-            if(!iterator.hasNext()) {
+            if (!iterator.hasNext()) {
                 return Collections.emptyMap();
             }
             Object object = iterator.next();
             errors = validate(object, new Class[0]);
-        }while(errors.isEmpty());
+        } while (errors.isEmpty());
         return errors;
     }
 
     public static Map<String, String> validateObject(Object first, Object... objects) {
-        if(objects != null && objects.length > 0) {
+        if (objects != null && objects.length > 0) {
             return validateList(Lists.asList(first, objects));
-        }else {
+        } else {
             return validate(first, new Class[0]);
         }
     }
 
     public static void check(Object param) throws CustomException {
         Map<String, String> map = BeanValidator.validateObject(param);
-        if(MapUtils.isNotEmpty(map)) {
+        if (MapUtils.isNotEmpty(map)) {
             throw new CustomException(map.toString());
         }
     }

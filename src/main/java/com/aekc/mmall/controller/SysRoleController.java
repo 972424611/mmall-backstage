@@ -93,9 +93,9 @@ public class SysRoleController {
         List<SysUser> unselectedUserList = Lists.newArrayList();
 
         Set<Integer> selectedUserIdSet = selectedUserList.stream().map(SysUser::getId).collect(Collectors.toSet());
-        for(SysUser sysUser : allUserList) {
+        for (SysUser sysUser : allUserList) {
             // 大数据不要用到List的contains方法, 用set效率会高很多
-            if(sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {
+            if (sysUser.getStatus() == 1 && !selectedUserIdSet.contains(sysUser.getId())) {
                 unselectedUserList.add(sysUser);
             }
         }

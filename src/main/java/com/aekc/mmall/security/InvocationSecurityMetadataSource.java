@@ -42,15 +42,15 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
         authorizationMap = Maps.newHashMap();
         // 以url为key，value为请求该url所需要的角色
         List<SysAcl> sysAclList = sysAclMapper.selectAllAcl();
-        for(SysAcl sysAcl : sysAclList) {
-            if(sysAcl.getStatus() != 1) {
+        for (SysAcl sysAcl : sysAclList) {
+            if (sysAcl.getStatus() != 1) {
                 // 权限点无效
                 continue;
             }
             List<SysRole> sysRoleList = sysRoleService.getRoleListByAclId(sysAcl.getId());
-            for(SysRole role : sysRoleList) {
+            for (SysRole role : sysRoleList) {
                 ConfigAttribute configAttribute = new SecurityConfig(role.getName());
-                if(authorizationMap.get(sysAcl.getUrl()) != null) {
+                if (authorizationMap.get(sysAcl.getUrl()) != null) {
                     authorizationMap.get(sysAcl.getUrl()).add(configAttribute);
                 } else {
                     List<ConfigAttribute> configAttributeList = new ArrayList<>();
@@ -66,22 +66,23 @@ public class InvocationSecurityMetadataSource implements FilterInvocationSecurit
     /**
      * 此方法是为了判定用户请求的url 是否在权限表中，如果在权限表中，
      * 则返回给 MyAccessDecisionManager的decide 方法，用来判定用户是否有此权限。如果不在权限表中则放行。
+     *
      * @param o 中包含用户请求的request 信息
      */
     @Override
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
-        if(authorizationMap == null || update) {
-            synchronized(InvocationSecurityMetadataSource.class) {
-                if(authorizationMap == null || update) {
+        if (authorizationMap == null || update) {
+            synchronized (InvocationSecurityMetadataSource.class) {
+                if (authorizationMap == null || update) {
                     loadResourceDefine();
                 }
             }
         }
         HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
-        for(Map.Entry<String, Collection<ConfigAttribute>> entry : authorizationMap.entrySet()) {
+        for (Map.Entry<String, Collection<ConfigAttribute>> entry : authorizationMap.entrySet()) {
             String resUrl = entry.getKey();
             AntPathRequestMatcher matcher = new AntPathRequestMatcher(resUrl);
-            if(matcher.matches(request)) {
+            if (matcher.matches(request)) {
                 return authorizationMap.get(resUrl);
             }
         }

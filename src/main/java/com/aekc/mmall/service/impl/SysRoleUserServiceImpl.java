@@ -34,7 +34,7 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
     @Override
     public List<SysUser> getListByRoleId(int roleId) {
         List<Integer> userIdList = sysRoleUserMapper.selectUserIdListByRoleId(roleId);
-        if(CollectionUtils.isEmpty(userIdList)) {
+        if (CollectionUtils.isEmpty(userIdList)) {
             return Lists.newArrayList();
         }
         return sysUserMapper.selectByIdList(userIdList);
@@ -43,11 +43,11 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
     @Override
     public void changeRoleUsers(int roleId, List<Integer> userIdList) {
         List<Integer> originUserIdList = sysRoleUserMapper.selectUserIdListByRoleId(roleId);
-        if(originUserIdList.size() == userIdList.size()) {
+        if (originUserIdList.size() == userIdList.size()) {
             Set<Integer> originUserIdSet = new HashSet<>(originUserIdList);
             Set<Integer> userIdSet = new HashSet<>(userIdList);
             originUserIdSet.removeAll(userIdSet);
-            if(CollectionUtils.isEmpty(originUserIdSet)) {
+            if (CollectionUtils.isEmpty(originUserIdSet)) {
                 return;
             }
         }
@@ -58,11 +58,11 @@ public class SysRoleUserServiceImpl implements SysRoleUserService {
     @Transactional(rollbackFor = Exception.class)
     protected void updateRoleUsers(int roleId, List<Integer> userIdList) {
         sysRoleUserMapper.deleteByRoleId(roleId);
-        if(CollectionUtils.isEmpty(userIdList)) {
+        if (CollectionUtils.isEmpty(userIdList)) {
             return;
         }
         List<SysRoleUser> roleUserList = new ArrayList<>();
-        for(Integer userId : userIdList) {
+        for (Integer userId : userIdList) {
             SysRoleUser roleUser = new SysRoleUser();
             roleUser.setRoleId(roleId);
             roleUser.setUserId(userId);

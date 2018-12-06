@@ -30,8 +30,8 @@ public class SecurityUtil {
         Random random = new Random(System.currentTimeMillis());
         boolean flag = false;
         int length = random.nextInt(3) + 8;
-        for(int i = 0; i < length; i++) {
-            if(flag) {
+        for (int i = 0; i < length; i++) {
+            if (flag) {
                 stringBuilder.append(NUM[random.nextInt(NUM.length)]);
             } else {
                 stringBuilder.append(WORD[random.nextInt(WORD.length)]);
@@ -42,7 +42,7 @@ public class SecurityUtil {
     }
 
     public static String encrypt(String s) {
-        char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+        char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
         try {
             byte[] btInput = s.getBytes();
             // 获得MD5摘要算法的 MessageDigest 对象

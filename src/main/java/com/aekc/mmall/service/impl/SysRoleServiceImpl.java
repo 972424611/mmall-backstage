@@ -48,7 +48,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public void save(RoleParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getName(), param.getId())) {
+        if (checkExist(param.getName(), param.getId())) {
             throw new RoleException("角色名称已经存在");
         }
         SysRole role = new SysRole();
@@ -63,11 +63,11 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public void update(RoleParam param) {
         BeanValidator.check(param);
-        if(checkExist(param.getName(), param.getId())) {
+        if (checkExist(param.getName(), param.getId())) {
             throw new RoleException("角色名称已经存在");
         }
         SysRole before = sysRoleMapper.selectByPrimaryKey(param.getId());
-        if(before == null) {
+        if (before == null) {
             throw new RoleException("待更新的角色不存在");
         }
         SysRole after = new SysRole();
@@ -87,7 +87,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public List<SysRole> getRoleListByUserId(int userId) {
         List<Integer> roleIdList = sysRoleUserMapper.selectRoleIdListByUserId(userId);
-        if(CollectionUtils.isEmpty(roleIdList)) {
+        if (CollectionUtils.isEmpty(roleIdList)) {
             return Lists.newArrayList();
         }
         return sysRoleMapper.selectByIdList(roleIdList);
@@ -96,7 +96,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Override
     public List<SysRole> getRoleListByAclId(int aclId) {
         List<Integer> roleIdList = sysRoleAclMapper.selectRoleIdListByAclId(aclId);
-        if(CollectionUtils.isEmpty(roleIdList)) {
+        if (CollectionUtils.isEmpty(roleIdList)) {
             return Lists.newArrayList();
         }
         return sysRoleMapper.selectByIdList(roleIdList);
@@ -104,12 +104,12 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Override
     public List<SysUser> getUserListByRoleList(List<SysRole> roleList) {
-        if(CollectionUtils.isEmpty(roleList)) {
+        if (CollectionUtils.isEmpty(roleList)) {
             return Lists.newArrayList();
         }
         List<Integer> roleIdList = roleList.stream().map(SysRole::getId).collect(Collectors.toList());
         List<Integer> userIdList = sysRoleUserMapper.selectUserIdListByRoleIdList(roleIdList);
-        if(CollectionUtils.isEmpty(userIdList)) {
+        if (CollectionUtils.isEmpty(userIdList)) {
             return Lists.newArrayList();
         }
         return sysUserMapper.selectByIdList(userIdList);

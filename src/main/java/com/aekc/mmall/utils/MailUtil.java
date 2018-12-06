@@ -24,7 +24,7 @@ public class MailUtil {
         try {
             email.setHostName(host);
             email.setCharset("UTF-8");
-            for(String str : mail.getReceivers()) {
+            for (String str : mail.getReceivers()) {
                 email.addTo(str);
             }
             email.setFrom(from, nickname);

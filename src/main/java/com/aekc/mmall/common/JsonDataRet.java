@@ -5,7 +5,9 @@ import lombok.Data;
 @Data
 public class JsonDataRet extends JsonData {
 
-    /** 登录后自动跳转到登录前的页面 */
+    /**
+     * 登录后自动跳转到登录前的页面
+     */
     private String retPage;
 
     public JsonDataRet(boolean ret) {

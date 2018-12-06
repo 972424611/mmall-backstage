@@ -24,6 +24,7 @@ import java.util.Map;
 
 /**
  * 资源管理拦截器AbstractSecurityInterceptor
+ *
  * @author Twilight
  */
 @Component
@@ -54,7 +55,7 @@ public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implemen
         String token = request.getHeader("token");
         Map<String, Object> resultMap = JwtUtil.validToken(token);
         TokenState state = TokenState.getTokenState((String) resultMap.get("state"));
-        switch(state) {
+        switch (state) {
             case VALID:
                 request.setAttribute("data", resultMap.get("data"));
                 addRequestHolder(request);
@@ -76,18 +77,18 @@ public class JwtSecurityInterceptor extends AbstractSecurityInterceptor implemen
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         // 防止同一个请求重复请求
-        if(servletRequest.getAttribute(FILTER_APPLIED) != null) {
+        if (servletRequest.getAttribute(FILTER_APPLIED) != null) {
             filterChain.doFilter(servletRequest, servletResponse);
             return;
         }
         servletRequest.setAttribute(FILTER_APPLIED, true);
         // 忽略springSecurity框架自带的/error
-        if(request.getRequestURL().toString().contains("/error")) {
+        if (request.getRequestURL().toString().contains("/error")) {
             return;
         }
         FilterInvocation filterInvocation = new FilterInvocation(servletRequest, servletResponse, filterChain);
         // 忽略OPTIONS请求
-        if("OPTIONS".equals(request.getMethod())) {
+        if ("OPTIONS".equals(request.getMethod())) {
             //invoke(filterInvocation);
             filterChain.doFilter(servletRequest, servletResponse);
             return;

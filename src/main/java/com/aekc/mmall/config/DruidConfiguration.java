@@ -21,33 +21,34 @@ public class DruidConfiguration {
     @Bean   //声明其为Bean实例
     @Primary //在同样的DataSource中，首先使用被标注的DataSource
     @ConfigurationProperties(prefix = "spring.datasource") //映射application.properties文件中spring.datasource开头的属性到新创建的对象中
-    public DataSource dataSource(){
+    public DataSource dataSource() {
         return new DruidDataSource();
     }
 
     @Bean
-    public ServletRegistrationBean statViewServlet(){
+    public ServletRegistrationBean statViewServlet() {
         //创建servlet注册实体
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(),"/druid/*");
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
         //设置ip白名单
-        servletRegistrationBean.addInitParameter("allow","127.0.0.1");
+        servletRegistrationBean.addInitParameter("allow", "127.0.0.1");
         //设置ip黑名单
-        servletRegistrationBean.addInitParameter("deny","192.168.0.2");
+        servletRegistrationBean.addInitParameter("deny", "192.168.0.2");
         //设置控制台管理用户__登录用户名和密码
-        servletRegistrationBean.addInitParameter("loginUsername","druid");
-        servletRegistrationBean.addInitParameter("loginPassword","123456");
+        servletRegistrationBean.addInitParameter("loginUsername", "druid");
+        servletRegistrationBean.addInitParameter("loginPassword", "123456");
         //是否可以重置数据
-        servletRegistrationBean.addInitParameter("resetEnable","false");
+        servletRegistrationBean.addInitParameter("resetEnable", "false");
         return servletRegistrationBean;
     }
+
     @Bean
-    public FilterRegistrationBean statFilter(){
+    public FilterRegistrationBean statFilter() {
         //创建过滤器
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new WebStatFilter());
         //设置过滤器过滤路径
         filterRegistrationBean.addUrlPatterns("/*");
         //忽略过滤的形式
-        filterRegistrationBean.addInitParameter("exclusions","*.js,*.gif,*.png,*.css,*.ico,/druid/*");
+        filterRegistrationBean.addInitParameter("exclusions", "*.js,*.gif,*.png,*.css,*.ico,/druid/*");
         return filterRegistrationBean;
     }
 

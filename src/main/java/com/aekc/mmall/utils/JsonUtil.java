@@ -10,6 +10,7 @@ import java.util.List;
 
 /**
  * 工具类, 处理json和pojo和List之间的转换
+ *
  * @author Twilight
  */
 public class JsonUtil {
@@ -20,6 +21,7 @@ public class JsonUtil {
 
     /**
      * 将对象转换成json字符串
+     *
      * @param data 对象类
      * @return String
      */
@@ -36,9 +38,10 @@ public class JsonUtil {
 
     /**
      * 将json转换为对象
+     *
      * @param jsonData json数据
      * @param beanType 对象中的object类型
-     * @param <T> 任意类型
+     * @param <T>      任意类型
      * @return pojo
      */
     public static <T> T jsonToPojo(String jsonData, Class<T> beanType) {
@@ -54,12 +57,13 @@ public class JsonUtil {
 
     /**
      * 将json数据转换为pojo对象List
+     *
      * @param jsonData json数据
      * @param beanType 对象中的object类型
-     * @param <T> 任意类型
+     * @param <T>      任意类型
      * @return list
      */
-    public static <T>List<T> jsonToList(String jsonData, Class<T> beanType) {
+    public static <T> List<T> jsonToList(String jsonData, Class<T> beanType) {
         JavaType javaType = MAPPER.getTypeFactory().constructParametricType(List.class, beanType);
         try {
             List<T> list = MAPPER.readValue(jsonData, javaType);

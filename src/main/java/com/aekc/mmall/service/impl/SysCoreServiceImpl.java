@@ -39,7 +39,7 @@ public class SysCoreServiceImpl implements SysCoreService {
     @Override
     public List<SysAcl> getRoleAclList(int roleId) {
         List<Integer> aclIdList = sysRoleAclMapper.selectAclIdListByRoleId(roleId);
-        if(CollectionUtils.isEmpty(aclIdList)) {
+        if (CollectionUtils.isEmpty(aclIdList)) {
             return Lists.newArrayList();
         }
         return sysAclMapper.selectByIdList(aclIdList);
@@ -47,18 +47,18 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public List<SysAcl> getUserAclList(int userId) {
-        if(isSuperAdmin()) {
+        if (isSuperAdmin()) {
             return sysAclMapper.selectAllAcl();
         }
         List<Integer> userRoleIdList = sysRoleUserMapper.selectRoleIdListByUserId(userId);
-        if(CollectionUtils.isEmpty(userRoleIdList)) {
+        if (CollectionUtils.isEmpty(userRoleIdList)) {
             return Lists.newArrayList();
         }
         List<Integer> userAclIdList = new ArrayList<>();
-        for(Integer roleId : userRoleIdList) {
+        for (Integer roleId : userRoleIdList) {
             userAclIdList.addAll(sysRoleAclMapper.selectAclIdListByRoleId(roleId));
         }
-        if(CollectionUtils.isEmpty(userAclIdList)) {
+        if (CollectionUtils.isEmpty(userAclIdList)) {
             return Lists.newArrayList();
         }
         Set<Integer> userAclIdSet = new HashSet<>(userAclIdList);
@@ -75,11 +75,11 @@ public class SysCoreServiceImpl implements SysCoreService {
 
     @Override
     public boolean hasUrlAcl(String url) {
-        if(isSuperAdmin()) {
+        if (isSuperAdmin()) {
             return true;
         }
         List<SysAcl> aclList = sysAclMapper.selectByUrl(url);
-        if(CollectionUtils.isEmpty(aclList)) {
+        if (CollectionUtils.isEmpty(aclList)) {
             return true;
         }
         // 这里可以使用下面的getCurrentUserAclListFromCache()
@@ -87,14 +87,14 @@ public class SysCoreServiceImpl implements SysCoreService {
         Set<Integer> userAclIdSet = userAclList.stream().map(SysAcl::getId).collect(Collectors.toSet());
         // 只要一个权限点有权限, 那么我们就认为有访问权限
         boolean hasValidAcl = true;
-        for(SysAcl acl : aclList) {
+        for (SysAcl acl : aclList) {
             // 判断一个用户是否具有某个权限点的访问权限
-            if(acl == null || acl.getStatus() != 1) {
+            if (acl == null || acl.getStatus() != 1) {
                 //权限点无效
                 continue;
             }
             hasValidAcl = false;
-            if(userAclIdSet.contains(acl.getId())) {
+            if (userAclIdSet.contains(acl.getId())) {
                 return true;
             }
         }

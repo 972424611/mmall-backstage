@@ -3,15 +3,21 @@ package com.aekc.mmall.enums;
 import lombok.Getter;
 
 @Getter
-public enum  TokenState {
+public enum TokenState {
 
-    /** 过期 */
+    /**
+     * 过期
+     */
     EXPIRED("EXPIRED"),
 
-    /** 无效(token不合法) */
+    /**
+     * 无效(token不合法)
+     */
     INVALID("INVALID"),
 
-    /** 有效的 */
+    /**
+     * 有效的
+     */
     VALID("VALID");
 
     private String state;
@@ -22,14 +28,15 @@ public enum  TokenState {
 
     /**
      * 根据状态字符串获取token状态枚举对象
+     *
      * @param tokenState
      * @return TokenState
      */
     public static TokenState getTokenState(String tokenState) {
         TokenState[] states = TokenState.values();
         TokenState ts = null;
-        for(TokenState state : states) {
-            if(state.toString().equals(tokenState)) {
+        for (TokenState state : states) {
+            if (state.toString().equals(tokenState)) {
                 ts = state;
                 break;
             }

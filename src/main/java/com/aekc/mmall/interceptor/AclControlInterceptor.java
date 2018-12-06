@@ -18,12 +18,12 @@ public class AclControlInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 前段ajax自定义headers字段，会出现了option请求，在GET请求之前。
         // 所以应该把他过滤掉，以免影响服务。但是不能返回false，如果返回false会导致后续请求不会继续。
-        if("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
         String servletPath = request.getServletPath();
         SysCoreService sysCoreService = ApplicationContextHelper.getBean(SysCoreServiceImpl.class);
-        if(!sysCoreService.hasUrlAcl(servletPath)) {
+        if (!sysCoreService.hasUrlAcl(servletPath)) {
             throw new AclControlException("没有访问权限, 如需访问请联系管理员");
         }
         return true;

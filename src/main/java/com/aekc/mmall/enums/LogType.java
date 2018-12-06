@@ -21,12 +21,14 @@ public enum LogType {
 
     private int type;
 
-    LogType(int type) {this.type = type;}
+    LogType(int type) {
+        this.type = type;
+    }
 
     public static LogType getLogType(int type) {
         LogType[] logTypes = LogType.values();
-        for(LogType logType : logTypes) {
-            if(logType.getType() == type) {
+        for (LogType logType : logTypes) {
+            if (logType.getType() == type) {
                 return logType;
             }
         }

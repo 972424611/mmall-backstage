@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class StringUtil {
 
     /**
-     *  1,2,3,,, 4,  --->   1 2 3 4
+     * 1,2,3,,, 4,  --->   1 2 3 4
      */
     public static List<Integer> splitToListInt(String str) {
         List<String> strList = Splitter.on(",").trimResults().omitEmptyStrings().splitToList(str);

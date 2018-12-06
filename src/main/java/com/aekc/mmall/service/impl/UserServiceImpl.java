@@ -35,29 +35,28 @@ public class UserServiceImpl implements UserService {
         String errorMsg;
         String retPage = request.getParameter("ret");
 
-        if(StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(username)) {
             errorMsg = "用户名不可以为空";
-        }else if(StringUtils.isBlank(password)) {
+        } else if (StringUtils.isBlank(password)) {
             errorMsg = "密码不可以为空";
-        }else if(sysUser == null) {
+        } else if (sysUser == null) {
             errorMsg = "查询不到指定用户";
-        }else if(!sysUser.getPassword().equals(SecurityUtil.encrypt(password))) {
+        } else if (!sysUser.getPassword().equals(SecurityUtil.encrypt(password))) {
             errorMsg = "用户名或密码错误";
-        }else if(sysUser.getStatus() != 1) {
+        } else if (sysUser.getStatus() != 1) {
             errorMsg = "用户已被冻结, 请联系管理员";
-        }else {
+        } else {
             // login success
             sysUser.setPassword(null);
             String token = JwtUtil.createTokenByUserId(sysUser.getId());
-            if(StringUtils.isNotBlank(retPage)) {
+            if (StringUtils.isNotBlank(retPage)) {
                 return JsonDataRet.success(token, retPage);
-            }else {
+            } else {
                 return JsonData.success(token);
             }
         }
         return JsonData.fail(errorMsg);
     }
-
 
 
 }

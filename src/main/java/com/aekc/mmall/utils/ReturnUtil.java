@@ -16,7 +16,7 @@ public class ReturnUtil {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "token, Accept, Origin, X-Requested-With, Content-Type, Last-Modified");
         response.setContentType("application/json;charset=UTF-8");
-        try(PrintWriter printWriter = response.getWriter()) {
+        try (PrintWriter printWriter = response.getWriter()) {
             JsonData result = JsonData.success(message);
             String resultJson = JsonUtil.objectToJson(result);
             assert resultJson != null;
@@ -31,7 +31,7 @@ public class ReturnUtil {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Headers", "token, Accept, Origin, X-Requested-With, Content-Type, Last-Modified");
         response.setContentType("application/json;charset=UTF-8");
-        try(PrintWriter printWriter = response.getWriter()) {
+        try (PrintWriter printWriter = response.getWriter()) {
             JsonData result = JsonData.fail(message);
             String resultJson = JsonUtil.objectToJson(result);
             assert resultJson != null;
